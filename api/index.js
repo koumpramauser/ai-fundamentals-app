@@ -8,11 +8,16 @@ dotenv.config();
 const app = express();
 
 // --- Middleware Ayarları ---
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-// Statik dosyalar için public klasörünü tanıt (Vercel için path.join şart)
-app.use(express.static(path.join(__dirname, 'public')));
+// index.js içindeki hata yakalayıcıyı bul ve şöyle güncelle:
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).render('error', { 
+        message: 'Bir şeyler ters gitti!',
+        error: err,
+        user: null, // Navbar'da kullanıcı adı kontrolü varsa çökmemesi için
+        title: 'Hata'
+    });
+});
 
 // EJS View Engine ayarları
 // Bu satırı bul ve tam olarak böyle değiştir:
