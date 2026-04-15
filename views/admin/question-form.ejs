@@ -1,0 +1,77 @@
+<%- include('../partials/header', { title: 'New Question' }) %>
+<%- include('../partials/navbar') %>
+
+<div class="page-sm">
+  <div class="flex-between mb-3">
+    <div>
+      <div class="page-title">Add Question</div>
+      <div class="page-sub">Topic: <strong><%= topic.title %></strong></div>
+    </div>
+    <a href="/admin/topics/<%= topic.id %>/questions" class="btn btn-outline btn-sm">← Back</a>
+  </div>
+
+  <div class="card">
+    <% if (error) { %><div class="alert alert-error"><%= error %></div><% } %>
+
+    <form method="POST" action="/admin/topics/<%= topic.id %>/questions" id="qform">
+      <div class="form-group">
+        <label for="type">Question Type</label>
+        <select name="type" id="type" onchange="toggleFields()" required>
+          <option value="mcq">Multiple Choice (MCQ)</option>
+          <option value="tf">True / False</option>
+          <option value="open">Open-Ended (AI Graded)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="text">Question Text</label>
+        <textarea id="text" name="text" rows="3" required placeholder="Enter the full question here..."></textarea>
+      </div>
+
+      <!-- MCQ Options -->
+      <div id="mcq-section" class="form-group">
+        <label for="options">Answer Options <span class="text-muted" style="font-weight:400">(one per line)</span></label>
+        <textarea id="options" name="options" rows="5" placeholder="Gradient Descent&#10;Newton's Method&#10;Random Forest&#10;Backpropagation"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="correct_answer">Correct Answer</label>
+        <input type="text" id="correct_answer" name="correct_answer" placeholder="For MCQ: exact option text. For TF: 'true' or 'false'. For Open: leave blank or write model answer." />
+      </div>
+
+      <!-- Open-ended fields -->
+      <div id="open-section">
+        <div class="form-group">
+          <label for="rubric">Grading Rubric <span class="text-muted" style="font-weight:400">(for AI grader)</span></label>
+          <textarea id="rubric" name="rubric" rows="4" placeholder="Award full marks if the student correctly defines the concept, explains why it is used, and provides a real-world example. Partial credit for incomplete but accurate explanations."></textarea>
+        </div>
+        <div class="form-group">
+          <label for="keywords">Technical Keywords <span class="text-muted" style="font-weight:400">(comma-separated)</span></label>
+          <input type="text" id="keywords" name="keywords" placeholder="e.g. Learning Rate, Gradient, Convergence, Heuristics" />
+          <small class="text-muted">AI will check that the student uses these terms appropriately.</small>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="points">Points Value</label>
+        <input type="number" id="points" name="points" value="10" min="1" max="100" />
+      </div>
+
+      <div class="flex gap-1 mt-2">
+        <button type="submit" class="btn btn-primary">Add Question</button>
+        <a href="/admin/topics/<%= topic.id %>/questions" class="btn btn-outline">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+function toggleFields() {
+  const type = document.getElementById('type').value;
+  document.getElementById('mcq-section').style.display = type === 'mcq' ? '' : 'none';
+  document.getElementById('open-section').style.display = type === 'open' ? '' : 'none';
+}
+toggleFields();
+</script>
+
+<%- include('../partials/footer') %>

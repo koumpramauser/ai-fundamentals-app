@@ -1,0 +1,56 @@
+<%- include('../partials/header', { title: 'Questions: ' + topic.title }) %>
+<%- include('../partials/navbar') %>
+
+<div class="page">
+  <div class="flex-between mb-3">
+    <div>
+      <div class="page-title">Questions: <%= topic.title %></div>
+      <div class="page-sub"><%= questions.length %> question(s) configured for this topic.</div>
+    </div>
+    <div class="flex gap-1">
+      <a href="/admin/topics/<%= topic.id %>/questions/new" class="btn btn-primary">+ Add Question</a>
+      <a href="/admin/dashboard" class="btn btn-outline btn-sm">← Dashboard</a>
+    </div>
+  </div>
+
+  <% if (questions.length === 0) { %>
+    <div class="alert alert-info">No questions yet. Add MCQ, True/False, or open-ended questions.</div>
+  <% } else { %>
+  <div class="card">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Question</th>
+            <th>Type</th>
+            <th>Points</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% questions.forEach((q, i) => { %>
+          <tr>
+            <td class="text-muted"><%= i + 1 %></td>
+            <td style="max-width:360px"><%= q.text.substring(0, 100) %><%= q.text.length > 100 ? '...' : '' %></td>
+            <td>
+              <span class="tag <%= q.type==='mcq'?'tag-blue':q.type==='open'?'tag-orange':'tag-gray' %>">
+                <%= q.type.toUpperCase() %>
+              </span>
+            </td>
+            <td><strong><%= q.points || 10 %></strong></td>
+            <td>
+              <form method="POST" action="/admin/questions/<%= q.id %>?_method=DELETE" style="display:inline" onsubmit="return confirm('Delete this question?')">
+                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+              </form>
+            </td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <% } %>
+</div>
+
+<%- include('../partials/footer') %>

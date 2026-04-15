@@ -1,0 +1,39 @@
+<%- include('../partials/header', { title: topic ? 'Edit Topic' : 'New Topic' }) %>
+<%- include('../partials/navbar') %>
+
+<div class="page-sm">
+  <div class="flex-between mb-3">
+    <div>
+      <div class="page-title"><%= topic ? 'Edit Topic' : 'Create New Topic' %></div>
+      <div class="page-sub">Topics contain a summary and optional podcast link for students.</div>
+    </div>
+    <a href="/admin/dashboard" class="btn btn-outline btn-sm">← Back</a>
+  </div>
+
+  <div class="card">
+    <% if (error) { %><div class="alert alert-error"><%= error %></div><% } %>
+
+    <form method="POST" action="<%= topic ? '/admin/topics/' + topic.id + '?_method=PUT' : '/admin/topics' %>">
+      <div class="form-group">
+        <label for="title">Topic Title</label>
+        <input type="text" id="title" name="title" required value="<%= topic ? topic.title : '' %>" placeholder="e.g., Machine Learning Fundamentals" />
+      </div>
+      <div class="form-group">
+        <label for="summary_text">Topic Summary <span class="text-muted" style="font-weight:400">(bullet points, key concepts)</span></label>
+        <textarea id="summary_text" name="summary_text" rows="8" placeholder="• Supervised learning uses labeled data&#10;• Loss functions measure prediction error&#10;• Gradient Descent minimizes the loss&#10;• Learning Rate controls step size"><%= topic ? topic.summary_text : '' %></textarea>
+        <small class="text-muted">This is what students see as their study material. Be thorough.</small>
+      </div>
+      <div class="form-group">
+        <label for="podcast_url">Podcast URL <span class="text-muted" style="font-weight:400">(optional)</span></label>
+        <input type="url" id="podcast_url" name="podcast_url" value="<%= topic ? (topic.podcast_url || '') : '' %>" placeholder="https://open.spotify.com/episode/..." />
+        <small class="text-muted">Embed or link to an audio resource for this topic.</small>
+      </div>
+      <div class="flex gap-1 mt-2">
+        <button type="submit" class="btn btn-primary"><%= topic ? 'Save Changes' : 'Create Topic' %></button>
+        <a href="/admin/dashboard" class="btn btn-outline">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,65 @@
+<%- include('../partials/header', { title: 'Admin Dashboard' }) %>
+<%- include('../partials/navbar') %>
+
+<div class="page">
+  <div class="flex-between mb-3">
+    <div>
+      <div class="page-title">Admin Dashboard</div>
+      <div class="page-sub">Manage topics, questions, and monitor student performance.</div>
+    </div>
+    <a href="/admin/topics/new" class="btn btn-primary">+ New Topic</a>
+  </div>
+
+  <!-- Topics -->
+  <div class="section-title">Topics (<%= topics.length %>)</div>
+  <% if (topics.length === 0) { %>
+    <div class="alert alert-info">No topics yet. Create one to get started.</div>
+  <% } else { %>
+  <div class="grid-2">
+    <% topics.forEach(t => { %>
+    <div class="card">
+      <div class="flex-between mb-1">
+        <span style="font-weight:700;color:var(--primary)"><%= t.title %></span>
+        <% if (t.podcast_url) { %><span class="tag tag-orange">🎙 Podcast</span><% } %>
+      </div>
+      <p class="text-muted" style="font-size:.85rem;margin-bottom:1rem;line-height:1.5">
+        <%= t.summary_text ? t.summary_text.substring(0, 120) + '...' : 'No summary.' %>
+      </p>
+      <div class="flex gap-1" style="flex-wrap:wrap">
+        <a href="/admin/topics/<%= t.id %>/questions" class="btn btn-outline btn-sm">Manage Questions</a>
+        <a href="/admin/topics/<%= t.id %>/edit" class="btn btn-sm" style="background:var(--surface2);color:var(--text)">Edit</a>
+        <form method="POST" action="/admin/topics/<%= t.id %>?_method=DELETE" style="display:inline" onsubmit="return confirm('Delete this topic and all its questions?')">
+          <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+        </form>
+      </div>
+    </div>
+    <% }) %>
+  </div>
+  <% } %>
+
+  <!-- Leaderboard Preview -->
+  <div class="section-title mt-3">Top Students</div>
+  <div class="card">
+    <% if (leaderboard.length === 0) { %>
+      <p class="text-muted">No scores yet.</p>
+    <% } else { %>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Rank</th><th>Student</th><th>Total Points</th><th>Last Active</th></tr></thead>
+        <tbody>
+          <% leaderboard.forEach((row, i) => { %>
+          <tr>
+            <td><span class="lb-rank <%= i===0?'gold':i===1?'silver':i===2?'bronze':'' %>">#<%= i+1 %></span></td>
+            <td><strong><%= row.users?.name || 'Unknown' %></strong></td>
+            <td><span class="lb-points"><%= row.total_points %> pts</span></td>
+            <td class="text-muted" style="font-size:.83rem"><%= row.last_updated ? new Date(row.last_updated).toLocaleDateString() : '—' %></td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+    <% } %>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

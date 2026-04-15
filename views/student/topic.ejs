@@ -1,0 +1,75 @@
+<%- include('../partials/header', { title: topic.title }) %>
+<%- include('../partials/navbar') %>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$', '$$']],
+      processEscapes: true
+    },
+    options: {
+      enableMenu: false
+    }
+  };
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+<div class="page-sm">
+  <div class="flex-between mb-3">
+    <div>
+      <div class="page-title"><%= topic.title %></div>
+      <div class="page-sub">Study this material before attempting the practice questions.</div>
+    </div>
+    <a href="/student/dashboard" class="btn btn-outline btn-sm">← Dashboard</a>
+  </div>
+
+  <div class="card mb-2">
+    <div class="section-title" style="margin-top:0">Topic Summary</div>
+    <div id="raw-content" style="display:none;"><%= topic.summary_text %></div>
+    <div id="rendered-content" class="markdown-body" style="line-height:1.75; font-size:.95rem;">
+      Loading summary...
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="section-title" style="margin-top:0">Practice Questions</div>
+    <p class="text-muted mb-2" style="font-size:.9rem">
+      This topic has <strong><%= questions.length %></strong> practice question(s).
+    </p>
+    <a href="/student/topics/<%= topic.id %>/practice" class="btn btn-primary">Start Practice →</a>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const rawData = document.getElementById('raw-content').innerHTML;
+    // Markdown'ı HTML'e çevir
+    const htmlContent = marked.parse(rawData);
+    document.getElementById('rendered-content').innerHTML = htmlContent;
+    
+    // MathJax'e "Sayfayı tekrar tara ve formülleri çiz" komutu ver
+    if (window.MathJax && window.MathJax.typeset) {
+      window.MathJax.typeset();
+    }
+  });
+</script>
+
+<%- include('../partials/footer') %>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$', '$$'], ['\\[', '\\]']],
+      processEscapes: true
+    }
+  };
+</script>
+
+<style>
+  /* Formüllerin Calibri ile uyumlu ve okunaklı durması için */
+  .mjx-chtml { font-size: 110% !important; }
+</style>

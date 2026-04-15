@@ -1,0 +1,37 @@
+<%- include('../partials/header', { title: 'Register' }) %>
+<%- include('../partials/navbar') %>
+
+<div class="page-sm" style="padding-top:4rem">
+  <div class="card">
+    <div class="text-center mb-3">
+      <div style="font-family:var(--font-head);font-size:1.8rem;color:var(--primary);font-weight:700;margin-bottom:.3rem">StudyAI</div>
+      <div style="color:var(--text-muted);font-size:.9rem">AI Fundamentals Edition &bull; FAU Erlangen-Nürnberg</div>
+    </div>
+    <h2 style="font-size:1.1rem;font-weight:700;margin-bottom:1.2rem">Create Student Account</h2>
+
+    <% if (error) { %><div class="alert alert-error"><%= error %></div><% } %>
+
+    <form method="POST" action="/register">
+      <div class="form-group">
+        <label for="name">Full Name</label>
+        <input type="text" id="name" name="name" required placeholder="Jane Smith" />
+      </div>
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" name="email" required placeholder="your@fau.edu" />
+      </div>
+      <div class="form-group">
+        <label for="password">Password <span class="text-muted" style="font-weight:400">(min. 8 characters)</span></label>
+        <input type="password" id="password" name="password" required minlength="8" placeholder="••••••••" />
+      </div>
+      <button type="submit" class="btn btn-primary btn-lg" style="width:100%">Create Account</button>
+    </form>
+
+    <hr />
+    <p class="text-center text-muted" style="font-size:.9rem">
+      Already registered? <a href="/login">Sign in</a>
+    </p>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

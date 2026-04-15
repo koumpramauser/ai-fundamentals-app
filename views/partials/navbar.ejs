@@ -1,0 +1,20 @@
+<nav class="navbar">
+  <a href="/" class="navbar-brand">Study<span>AI</span> &mdash; FAU</a>
+  <div class="navbar-links">
+    <% if (sessionUser) { %>
+      <% if (sessionUser.role === 'admin') { %>
+        <a href="/admin/dashboard">Dashboard</a>
+        <a href="/leaderboard">Leaderboard</a>
+      <% } else { %>
+        <a href="/student/dashboard">My Learning</a>
+        <a href="/student/workspace">Workspace</a>
+        <a href="/leaderboard">Leaderboard</a>
+      <% } %>
+      <span style="color:rgba(255,255,255,.6);font-size:.85rem">Hello, <%= sessionUser.name.split(' ')[0] %></span>
+      <a href="/logout" class="btn-logout">Log Out</a>
+    <% } else { %>
+      <a href="/login">Login</a>
+      <a href="/register">Register</a>
+    <% } %>
+  </div>
+</nav>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= typeof title !== 'undefined' ? title + ' — StudyAI' : 'StudyAI: AI Fundamentals' %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ── RESET & BASE ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:        #f5f6fa;
+      --surface:   #ffffff;
+      --surface2:  #eef0f7;
+      --border:    #d8dce8;
+      --text:      #1a1d2e;
+      --text-muted:#6b7280;
+      --primary:   #1c4b9e;
+      --primary-lt:#dde8ff;
+      --accent:    #e86c2c;
+      --success:   #15803d;
+      --success-lt:#dcfce7;
+      --error:     #b91c1c;
+      --error-lt:  #fee2e2;
+      --warn:      #b45309;
+      --warn-lt:   #fef3c7;
+      --radius:    10px;
+      --shadow:    0 2px 12px rgba(28,75,158,.08);
+      --font-body: 'Lato', 'Calibri', sans-serif;
+      --font-head: 'Merriweather', 'Georgia', serif;
+    }
+    html { font-size: 16px; }
+    body { font-family: var(--font-body); background: var(--bg); color: var(--text); line-height: 1.65; min-height: 100vh; }
+    a { color: var(--primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ── NAVBAR ── */
+    .navbar {
+      background: var(--primary);
+      color: #fff;
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 58px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.15);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .navbar-brand { font-family: var(--font-head); font-size: 1.2rem; font-weight: 700; color: #fff; letter-spacing: .4px; }
+    .navbar-brand span { color: #ffd47e; }
+    .navbar-links { display: flex; align-items: center; gap: 1.4rem; }
+    .navbar-links a { color: rgba(255,255,255,.88); font-size: .92rem; font-weight: 600; transition: color .2s; }
+    .navbar-links a:hover { color: #fff; text-decoration: none; }
+    .navbar-links .badge { background: var(--accent); color: #fff; font-size: .72rem; padding: 2px 7px; border-radius: 20px; margin-left: 4px; }
+    .btn-logout { background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.3); border-radius: 6px; padding: 5px 14px; color: #fff !important; cursor: pointer; font-size: .88rem; }
+    .btn-logout:hover { background: rgba(255,255,255,.25); }
+
+    /* ── LAYOUT ── */
+    .page { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem; }
+    .page-sm { max-width: 680px; margin: 0 auto; padding: 2.5rem 1.5rem; }
+    .page-title { font-family: var(--font-head); font-size: 1.6rem; font-weight: 700; color: var(--primary); margin-bottom: .3rem; }
+    .page-sub { color: var(--text-muted); font-size: .95rem; margin-bottom: 1.8rem; }
+    .section-title { font-size: 1.05rem; font-weight: 700; color: var(--text); margin: 1.6rem 0 .8rem; text-transform: uppercase; letter-spacing: .6px; border-bottom: 2px solid var(--border); padding-bottom: .4rem; }
+
+    /* ── CARD ── */
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; box-shadow: var(--shadow); }
+    .card + .card { margin-top: 1rem; }
+
+    /* ── BUTTONS ── */
+    .btn { display: inline-flex; align-items: center; gap: .4rem; padding: .55rem 1.2rem; border-radius: 7px; font-size: .92rem; font-weight: 600; cursor: pointer; border: none; transition: all .18s; text-decoration: none !important; }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: #153d85; }
+    .btn-accent { background: var(--accent); color: #fff; }
+    .btn-accent:hover { background: #c9561f; }
+    .btn-outline { background: transparent; color: var(--primary); border: 1.5px solid var(--primary); }
+    .btn-outline:hover { background: var(--primary-lt); }
+    .btn-danger { background: var(--error); color: #fff; }
+    .btn-danger:hover { background: #9b1515; }
+    .btn-sm { padding: .35rem .8rem; font-size: .83rem; }
+    .btn-lg { padding: .75rem 1.8rem; font-size: 1rem; }
+
+    /* ── FORMS ── */
+    .form-group { margin-bottom: 1.2rem; }
+    label { display: block; font-weight: 600; font-size: .9rem; margin-bottom: .35rem; color: var(--text); }
+    input[type="text"], input[type="email"], input[type="password"], input[type="url"], input[type="number"],
+    select, textarea {
+      width: 100%; padding: .6rem .85rem; border: 1.5px solid var(--border);
+      border-radius: 7px; font-family: var(--font-body); font-size: .95rem;
+      background: var(--surface); color: var(--text); transition: border-color .2s;
+    }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-lt); }
+    textarea { resize: vertical; min-height: 100px; }
+
+    /* ── ALERTS ── */
+    .alert { padding: .75rem 1rem; border-radius: 7px; font-size: .93rem; margin-bottom: 1rem; }
+    .alert-error { background: var(--error-lt); color: var(--error); border: 1px solid #fca5a5; }
+    .alert-success { background: var(--success-lt); color: var(--success); border: 1px solid #86efac; }
+    .alert-warn { background: var(--warn-lt); color: var(--warn); border: 1px solid #fcd34d; }
+    .alert-info { background: var(--primary-lt); color: var(--primary); border: 1px solid #93c5fd; }
+
+    /* ── GRID ── */
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.2rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; }
+
+    /* ── BADGE ── */
+    .tag { display: inline-block; font-size: .76rem; font-weight: 700; padding: 2px 9px; border-radius: 20px; text-transform: uppercase; letter-spacing: .4px; }
+    .tag-blue { background: var(--primary-lt); color: var(--primary); }
+    .tag-orange { background: #fff0e5; color: var(--accent); }
+    .tag-green { background: var(--success-lt); color: var(--success); }
+    .tag-gray { background: var(--surface2); color: var(--text-muted); }
+
+    /* ── TABLE ── */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: .92rem; }
+    th { background: var(--surface2); color: var(--text); font-weight: 700; text-align: left; padding: .65rem 1rem; border-bottom: 2px solid var(--border); }
+    td { padding: .6rem 1rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--bg); }
+
+    /* ── DIVIDER ── */
+    hr { border: none; border-top: 1px solid var(--border); margin: 1.5rem 0; }
+
+    /* ── MISC ── */
+    .text-muted { color: var(--text-muted); }
+    .text-center { text-align: center; }
+    .flex { display: flex; align-items: center; }
+    .flex-between { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .8rem; }
+    .mt-1 { margin-top: .5rem; } .mt-2 { margin-top: 1rem; } .mt-3 { margin-top: 1.5rem; }
+    .mb-1 { margin-bottom: .5rem; } .mb-2 { margin-bottom: 1rem; } .mb-3 { margin-bottom: 1.5rem; }
+    .gap-1 { gap: .5rem; } .gap-2 { gap: 1rem; }
+
+    /* ── SCORE PILL ── */
+    .score-pill { display: inline-flex; align-items: center; gap: .3rem; background: var(--primary-lt); color: var(--primary); font-weight: 700; font-size: .88rem; padding: 4px 12px; border-radius: 20px; }
+
+    /* ── LEADERBOARD ── */
+    .lb-rank { font-weight: 800; color: var(--text-muted); min-width: 2rem; }
+    .lb-rank.gold { color: #d97706; }
+    .lb-rank.silver { color: #6b7280; }
+    .lb-rank.bronze { color: #92400e; }
+    .lb-points { font-weight: 800; color: var(--primary); }
+
+    /* ── RESULT BLOCKS ── */
+    .result-correct { border-left: 4px solid var(--success); background: var(--success-lt); }
+    .result-incorrect { border-left: 4px solid var(--error); background: var(--error-lt); }
+    .result-partial { border-left: 4px solid var(--warn); background: var(--warn-lt); }
+
+    /* ── PRINT / FOCUS ── */
+    @media (max-width: 640px) {
+      .page, .page-sm { padding: 1rem; }
+      .navbar { padding: 0 1rem; }
+    }
+  </style>
+</head>
+<body>
+<script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      processEscapes: true
+    }
+  };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
