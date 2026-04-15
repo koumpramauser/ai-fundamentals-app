@@ -15,7 +15,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // EJS View Engine ayarları
-app.set('views', path.join(__dirname, '..' , 'views'));
+// Bu satırı bul ve tam olarak böyle değiştir:
+app.set('views', path.join(__dirname, '..', 'views'));
+app.set('view engine', 'ejs');
 
 // --- Mock Middleware (Daha önce tanımladığın requireLogin vb. buraya gelecek) ---
 const requireLogin = (req, res, next) => {
