@@ -18,6 +18,14 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Bu satırı bul ve tam olarak böyle değiştir:
 app.set('views', path.join(__dirname, '..', 'views'));
 app.set('view engine', 'ejs');
+app.get('/auth/login', (req, res) => {
+    // EJS dosyanın içinde hata mesajı veya başka değişkenler varsa, 
+    // onları burada 'null' veya boş string olarak tanımlaman şarttır.
+    res.render('auth/login', { 
+        error: null,    // Eğer login.ejs içinde 'error' kullanılıyorsa
+        message: null   // Eğer login.ejs içinde 'message' kullanılıyorsa
+    });
+});
 
 // --- Mock Middleware (Daha önce tanımladığın requireLogin vb. buraya gelecek) ---
 const requireLogin = (req, res, next) => {
