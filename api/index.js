@@ -1,4 +1,6 @@
-// api/index.js — Vercel Serverless Entry Point
+const path = require('path');
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');// api/index.js — Vercel Serverless Entry Point
 require('dotenv').config({ path: require('path').resolve(__dirname, '../.env') });
 const express = require('express');
 const session = require('express-session');
