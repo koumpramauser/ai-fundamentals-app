@@ -1,4 +1,10 @@
-const express = require('express');
+// Bunu index.js içindeki rotaların (app.get...) üstüne ekle:
+app.use((req, res, next) => {
+    // Eğer session kullanıyorsan req.session.user'ı, 
+    // kullanmıyorsan null değerini tüm sayfalara (res.locals) gönderir.
+    res.locals.sessionUser = req.session ? req.session.user : null;
+    next();
+});const express = require('express');
 const path = require('path');
 const dotenv = require('dotenv');
 
