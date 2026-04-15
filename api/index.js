@@ -29,6 +29,12 @@ app.use((err, req, res, next) => {
 // Bu satırı bul ve tam olarak böyle değiştir:
 app.set('views', path.join(__dirname, '..', 'views'));
 app.set('view engine', 'ejs');
+// --- TÜM ROTALARIN ÜSTÜNE EKLE ---
+app.use((req, res, next) => {
+  // Eğer session varsa user'ı, yoksa null değerini global 'sessionUser' olarak tanımlar
+  res.locals.sessionUser = (req.session && req.session.user) ? req.session.user : null;
+  next();
+});
 app.get('/auth/login', (req, res) => {
     // EJS dosyanın içinde hata mesajı veya başka değişkenler varsa, 
     // onları burada 'null' veya boş string olarak tanımlaman şarttır.
@@ -45,31 +51,61 @@ const requireLogin = (req, res, next) => {
 };
 
 // --- Rotalar (Routes) ---
-
+// --- TÜM ROTALARIN ÜSTÜNE EKLE ---
+app.use((req, res, next) => {
+  // Eğer session varsa user'ı, yoksa null değerini global 'sessionUser' olarak tanımlar
+  res.locals.sessionUser = (req.session && req.session.user) ? req.session.user : null;
+  next();
+});
 // 1. Ana Sayfa Rotası (404 hatasını çözen en kritik kısım)
 app.get('/', (req, res) => {
     // Kullanıcıyı direkt login sayfasına veya dashboard'a yönlendir
     res.redirect('/auth/login');
 });
-
+// --- TÜM ROTALARIN ÜSTÜNE EKLE ---
+app.use((req, res, next) => {
+  // Eğer session varsa user'ı, yoksa null değerini global 'sessionUser' olarak tanımlar
+  res.locals.sessionUser = (req.session && req.session.user) ? req.session.user : null;
+  next();
+});
 // 2. Auth Rotaları
 app.get('/auth/login', (req, res) => {
     res.render('auth/login');
 });
-
+// --- TÜM ROTALARIN ÜSTÜNE EKLE ---
+app.use((req, res, next) => {
+  // Eğer session varsa user'ı, yoksa null değerini global 'sessionUser' olarak tanımlar
+  res.locals.sessionUser = (req.session && req.session.user) ? req.session.user : null;
+  next();
+});
 app.get('/auth/register', (req, res) => {
     res.render('auth/register');
 });
-
+// --- TÜM ROTALARIN ÜSTÜNE EKLE ---
+app.use((req, res, next) => {
+  // Eğer session varsa user'ı, yoksa null değerini global 'sessionUser' olarak tanımlar
+  res.locals.sessionUser = (req.session && req.session.user) ? req.session.user : null;
+  next();
+});
 // 3. Öğrenci Paneli Rotaları
 app.get('/student/dashboard', requireLogin, (req, res) => {
     res.render('student/dashboard');
 });
-
+// --- TÜM ROTALARIN ÜSTÜNE EKLE ---
+app.use((req, res, next) => {
+  // Eğer session varsa user'ı, yoksa null değerini global 'sessionUser' olarak tanımlar
+  res.locals.sessionUser = (req.session && req.session.user) ? req.session.user : null;
+  next();
+});
 app.get('/student/workspace', requireLogin, (req, res) => {
     res.render('student/workspace', { review: null, error: null });
 });
-
+// --- TÜM ROTALARIN ÜSTÜNE EKLE ---
+app.use((req, res, next) => {
+  // Eğer session varsa user'ı, yoksa null değerini global 'sessionUser' olarak tanımlar
+  res.locals.sessionUser = (req.session && req.session.user) ? req.session.user : null;
+  next();
+});
 // 4. Leaderboard Rotası
 app.get('/leaderboard', requireLogin, async (req, res) => {
     try {
@@ -99,7 +135,12 @@ if (process.env.NODE_ENV !== 'production') {
 }// ... (Senin o 380 satırlık kodun burada devam ediyor olsun) ...
 
 // --- BU KISMI EN ALTA EKLE ---
-
+// --- TÜM ROTALARIN ÜSTÜNE EKLE ---
+app.use((req, res, next) => {
+  // Eğer session varsa user'ı, yoksa null değerini global 'sessionUser' olarak tanımlar
+  res.locals.sessionUser = (req.session && req.session.user) ? req.session.user : null;
+  next();
+});
 // 1. Ana sayfa isteği gelince ne yapacağını bilemediği için 404 veriyordu, bunu ekle:
 app.get('/', (req, res) => {
     res.redirect('/auth/login'); 
