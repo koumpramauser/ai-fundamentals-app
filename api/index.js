@@ -58,6 +58,9 @@ app.get('/', (req, res) => {
     return req.session.role === 'admin'
       ? res.redirect('/admin/dashboard')
       : res.redirect('/student/dashboard');
+      app.get('/', (req, res) => {
+  res.redirect('/auth/login'); // Veya ana sayfan hangisiyse ona yönlendir
+});
   }
   res.render('auth/login', { error: null });
 });
