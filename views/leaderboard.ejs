@@ -34,7 +34,7 @@
             <th>Rank</th>
             <th>Student</th>
             <th>Points</th>
-            <th>Last Active</th>
+            <th>Tier</th>
           </tr>
         </thead>
         <tbody>
@@ -52,8 +52,15 @@
               <% } %>
             </td>
             <td><span class="lb-points"><%= row.total_points %></span></td>
-            <td class="text-muted" style="font-size:.83rem">
-              <%= row.last_updated ? new Date(row.last_updated).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—' %>
+            <td>
+              <%
+                let tier, tierColor;
+                if (row.total_points >= 500)      { tier = '🌟 Master';       tierColor = '#7c3aed'; }
+                else if (row.total_points >= 200) { tier = '🥇 Expert';       tierColor = '#d97706'; }
+                else if (row.total_points >= 50)  { tier = '🥈 Intermediate'; tierColor = '#6b7280'; }
+                else                              { tier = '🥉 Beginner';     tierColor = '#92400e'; }
+              %>
+              <span style="font-size:.8rem;font-weight:700;color:<%= tierColor %>"><%= tier %></span>
             </td>
           </tr>
           <% }) %>
