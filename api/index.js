@@ -55,15 +55,14 @@ app.post('/auth/login', async (req, res) => {
     const { email, password } = req.body;
     try {
         const { data: user, error } = await supabase.from('users').select('*').eq('email', email).single();
-        if (error || !user) return res.render('auth/login', { error: 'Kullanıcı bulunamadı.', message: null });
-        
-        // Supabase'deki düz yazı şifreler burada hata verir!
+        if (error || !user) return res.render('auth/login', { error: 'No account found with that email.', message: null });
+
         const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) return res.render('auth/login', { error: 'Hatalı şifre.', message: null });
-        
+        if (!isMatch) return res.render('auth/login', { error: 'Incorrect password. Please try again.', message: null });
+
         req.session.user = { id: user.id, email: user.email, role: user.role };
-        res.redirect('/student/dashboard'); // 404 aldığın yer burasıydı, rotayı aşağıya ekledim
-    } catch (err) { res.render('auth/login', { error: 'Giriş hatası oluştu.', message: null }); }
+        res.redirect('/student/dashboard');
+    } catch (err) { res.render('auth/login', { error: 'Something went wrong. Please try again.', message: null }); }
 });
 
 // DASHBOARD (EKSİK OLAN ROTA BUYDU)
@@ -75,18 +74,23 @@ app.get('/student/dashboard', (req, res) => {
 // REGISTER
 app.get('/auth/register', (req, res) => res.render('auth/register', { error: null }));
 app.post('/auth/register', async (req, res) => {
-    const { email, password, confirmPassword } = req.body;
-    if (password !== confirmPassword) return res.render('auth/register', { error: 'Şifreler uyuşmuyor.' });
+    const { email, password } = req.body;
+    if (!password || password.length < 8) {
+        return res.render('auth/register', { error: 'Password must be at least 8 characters.' });
+    }
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
         const { error } = await supabase.from('users').insert([{ email, password: hashedPassword, role: 'student' }]);
-        if (error) throw error;
-        res.render('auth/login', { error: null, message: 'Kayıt başarılı! Giriş yapabilirsin.' });
-    } catch (err) { res.render('auth/register', { error: 'Kayıt hatası.' }); }
+        if (error) {
+            if (error.code === '23505') return res.render('auth/register', { error: 'An account with this email already exists.' });
+            throw error;
+        }
+        res.render('auth/login', { error: null, message: 'Account created! You can now sign in.' });
+    } catch (err) { res.render('auth/register', { error: 'Registration failed. Please try again.' }); }
 });
 
 app.use((req, res) => res.status(404).render('error', { 
-    message: 'Sayfa Bulunamadı', 
+    message: 'Page Not Found', 
     error: {status:404}, 
     sessionUser: res.locals.sessionUser 
 }));
