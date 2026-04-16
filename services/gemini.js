@@ -1,18 +1,33 @@
-// services/gemini.js — Gemini 2.0 Flash integration
-const { GoogleGenerativeAI } = require('@google/generative-ai');
+// services/gemini.js — Direct fetch to Gemini API (no SDK version issues)
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent';
 
-function getModel() {
-  return genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+async function callGemini(prompt) {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) throw new Error('GEMINI_API_KEY is not set in environment variables.');
+
+  const response = await fetch(`${GEMINI_API_URL}?key=${apiKey}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      contents: [{ parts: [{ text: prompt }] }],
+      generationConfig: { temperature: 0.7, maxOutputTokens: 2048 }
+    })
+  });
+
+  if (!response.ok) {
+    const errText = await response.text();
+    throw new Error(`Gemini API error ${response.status}: ${errText}`);
+  }
+
+  const data = await response.json();
+  return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
 }
 
 // ─────────────────────────────────────────────
 // Grade an open-ended student answer
 // ─────────────────────────────────────────────
 async function gradeOpenAnswer({ questionText, rubric, keywords = [], studentAnswer, maxPoints = 10 }) {
-  const model = getModel();
-
   const keywordList = keywords.length > 0
     ? `Required technical keywords (student should use most of these): ${keywords.join(', ')}`
     : 'No specific keywords required.';
@@ -45,14 +60,11 @@ Respond ONLY in this exact JSON format (no markdown fences):
 }
 `;
 
-  const result = await model.generateContent(prompt);
-  const text = result.response.text().trim();
-
+  const text = await callGemini(prompt);
   try {
     const clean = text.replace(/```json|```/g, '').trim();
     return JSON.parse(clean);
   } catch {
-    // Fallback if JSON parse fails
     return { score: 0, feedback: 'AI grading encountered an error. Please contact your instructor.', missing_concepts: [] };
   }
 }
@@ -61,8 +73,6 @@ Respond ONLY in this exact JSON format (no markdown fences):
 // Review pseudo-code / algorithm logic
 // ─────────────────────────────────────────────
 async function reviewPseudocode({ algorithmName, pseudocode }) {
-  const model = getModel();
-
   const prompt = `
 You are an expert AI/CS instructor reviewing a student's pseudo-code for an AI Fundamentals course at FAU.
 
@@ -83,8 +93,7 @@ Please analyze the pseudo-code and provide:
 Use clear, academic English. Be encouraging but precise. Format your response using markdown with the sections above as headers.
 `;
 
-  const result = await model.generateContent(prompt);
-  return result.response.text();
+  return await callGemini(prompt);
 }
 
 module.exports = { gradeOpenAnswer, reviewPseudocode };
