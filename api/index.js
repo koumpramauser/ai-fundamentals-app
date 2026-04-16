@@ -259,7 +259,12 @@ app.post('/student/workspace/review', requireAuth, async (req, res) => {
         res.render('student/workspace', { title: 'Pseudo-code Workspace', review, error: null, algorithmName, pseudocode });
     } catch (err) {
         console.error('Workspace Gemini error:', err?.message || err);
-        const errorMsg = `AI review failed: ${err?.message || 'Unknown error'}. Check your GEMINI_API_KEY in Vercel.`;
+        let errorMsg = 'AI review failed. Please try again.';
+        if (err?.message?.includes('429') || err?.message?.includes('quota')) {
+            errorMsg = 'AI is currently busy (rate limit reached). Please wait a moment and try again.';
+        } else if (err?.message?.includes('API_KEY') || err?.message?.includes('403')) {
+            errorMsg = 'AI service configuration error. Please contact the administrator.';
+        }
         res.render('student/workspace', { title: 'Pseudo-code Workspace', review: null, error: errorMsg, algorithmName, pseudocode });
     }
 });
