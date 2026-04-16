@@ -1,5 +1,6 @@
 const express = require('express');
 const path = require('path');
+const fs = require('fs');
 const dotenv = require('dotenv');
 const session = require('express-session');
 const { createClient } = require('@supabase/supabase-js');
@@ -7,13 +8,26 @@ const bcrypt = require('bcryptjs');
 
 dotenv.config();
 
+if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    console.error('FATAL: Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY environment variables.');
+    // Don't crash — let routes fail gracefully
+}
+
 // Supabase Bağlantısı
-const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
+const supabase = createClient(
+    process.env.SUPABASE_URL || '',
+    process.env.SUPABASE_SERVICE_ROLE_KEY || ''
+);
 const app = express();
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '..', 'views'));
-app.use(express.static(path.join(__dirname, '..', 'public')));
+
+// Only serve static files if the public folder actually exists
+const publicDir = path.join(__dirname, '..', 'public');
+if (fs.existsSync(publicDir)) {
+    app.use(express.static(publicDir));
+}
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
