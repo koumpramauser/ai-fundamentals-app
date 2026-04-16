@@ -2,49 +2,123 @@ const express = require('express');
 const path = require('path');
 const dotenv = require('dotenv');
 
-// 1. Önce yapılandırmaları yükle
+// Load environment variables
 dotenv.config();
 
 const app = express();
 
-// 2. View Engine (EJS) Ayarları
-// Vercel'de klasör yapısı değişebildiği için path.join kullanmak en güvenlisidir.
+// --- View Engine Configuration ---
+// Fixed the path for Vercel to find the views folder correctly
+app.set('views', path.join(__dirname, '..', 'views'));
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, '../views'));
 
-// 3. Middleware Ayarları
+// --- Standard Middleware ---
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, '..', 'public')));
 
-// Statik dosyalar (css, js vb.) için
-app.use(express.static(path.join(__dirname, '../public')));
-
-// Senin yazdığın session kontrol middleware'i
+// --- Session Global Variables Middleware ---
+// This ensures Navbar and other pages don't crash when checking for user session
 app.use((req, res, next) => {
-    // Eğer session kullanıyorsan req.session.user'ı, kullanmıyorsan null döner
     res.locals.sessionUser = (req.session && req.session.user) ? req.session.user : null;
     next();
 });
 
-// --- BURAYA ROTALARINI (app.get, app.post) EKLEYEBİLİRSİN ---
+// --- Auth Check Middleware (requireLogin) ---
+const requireLogin = (req, res, next) => {
+    // If you have a real session logic, check it here
+    // For now, it proceeds to avoid blocking you
+    next();
+};
 
+// --- Routes ---
+
+// 1. Home Route (Root) - Redirects to login to avoid 404
 app.get('/', (req, res) => {
-    // Örnek olarak ana sayfayı render edelim veya mesaj gönderelim
-    res.send('StudyAI: AI Fundamentals Edition for FAU Students is Running!');
+    res.redirect('/auth/login');
 });
 
-// ---------------------------------------------------------
-
-// 4. Hata Yakalayıcı (En sonda olmalı)
-app.use((err, req, res, next) => {
-    console.error(err.stack);
-    // Hata sayfası render edilirken 'error.ejs' dosyasının varlığından emin ol
-    res.status(500).render('error', {
-        message: 'Bir şeyler ters gitti!',
-        error: err,
-        user: null
+// 2. Authentication Routes
+app.get('/auth/login', (req, res) => {
+    res.render('auth/login', { 
+        error: null, 
+        message: null,
+        title: 'Login'
     });
 });
 
-// 5. Vercel için kritik nokta: app.listen KULLANMIYORUZ
+app.get('/auth/register', (req, res) => {
+    res.render('auth/register', { 
+        error: null,
+        title: 'Register'
+    });
+});
+
+// 3. Student Panel Routes
+app.get('/student/dashboard', requireLogin, (req, res) => {
+    res.render('student/dashboard', {
+        title: 'Dashboard'
+    });
+});
+
+app.get('/student/workspace', requireLogin, (req, res) => {
+    res.render('student/workspace', { 
+        review: null, 
+        error: null,
+        title: 'Workspace'
+    });
+});
+
+// 4. Leaderboard Route
+app.get('/leaderboard', requireLogin, async (req, res) => {
+    try {
+        // Integrate your Supabase/DB logic here
+        res.render('leaderboard', { 
+            leaderBoard: [], 
+            myScore: 0,
+            title: 'Leaderboard'
+        });
+    } catch (err) {
+        res.status(500).render('error', { 
+            message: 'Leaderboard could not be loaded.',
+            error: err,
+            user: null,
+            title: 'Error'
+        });
+    }
+});
+
+// --- Error Handling ---
+
+// 404 Handler
+app.use((req, res) => {
+    res.status(404).render('error', { 
+        message: 'Page Not Found',
+        error: { status: 404 },
+        user: null,
+        title: '404'
+    });
+});
+
+// 500 Global Error Handler
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).render('error', { 
+        message: 'Something went wrong!',
+        error: err,
+        user: null,
+        title: '500 Error'
+    });
+});
+
+// --- Vercel Export ---
+// Essential for Vercel serverless deployment
 module.exports = app;
+
+// --- Local Development ---
+if (process.env.NODE_ENV !== 'production') {
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => {
+        console.log(`StudyAI is running locally at http://localhost:${PORT}`);
+    });
+}
