@@ -1,156 +1,50 @@
-// Bunu index.js içindeki rotaların (app.get...) üstüne ekle:
-app.use((req, res, next) => {
-    // Eğer session kullanıyorsan req.session.user'ı, 
-    // kullanmıyorsan null değerini tüm sayfalara (res.locals) gönderir.
-    res.locals.sessionUser = req.session ? req.session.user : null;
-    next();
-});const express = require('express');
+const express = require('express');
 const path = require('path');
 const dotenv = require('dotenv');
 
-// .env dosyasını yükle
+// 1. Önce yapılandırmaları yükle
 dotenv.config();
 
 const app = express();
 
-// --- Middleware Ayarları ---
-// index.js içindeki hata yakalayıcıyı bul ve şöyle güncelle:
+// 2. View Engine (EJS) Ayarları
+// Vercel'de klasör yapısı değişebildiği için path.join kullanmak en güvenlisidir.
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, '../views'));
+
+// 3. Middleware Ayarları
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Statik dosyalar (css, js vb.) için
+app.use(express.static(path.join(__dirname, '../public')));
+
+// Senin yazdığın session kontrol middleware'i
+app.use((req, res, next) => {
+    // Eğer session kullanıyorsan req.session.user'ı, kullanmıyorsan null döner
+    res.locals.sessionUser = (req.session && req.session.user) ? req.session.user : null;
+    next();
+});
+
+// --- BURAYA ROTALARINI (app.get, app.post) EKLEYEBİLİRSİN ---
+
+app.get('/', (req, res) => {
+    // Örnek olarak ana sayfayı render edelim veya mesaj gönderelim
+    res.send('StudyAI: AI Fundamentals Edition for FAU Students is Running!');
+});
+
+// ---------------------------------------------------------
+
+// 4. Hata Yakalayıcı (En sonda olmalı)
 app.use((err, req, res, next) => {
     console.error(err.stack);
-    res.status(500).render('error', { 
+    // Hata sayfası render edilirken 'error.ejs' dosyasının varlığından emin ol
+    res.status(500).render('error', {
         message: 'Bir şeyler ters gitti!',
         error: err,
-        user: null, // Navbar'da kullanıcı adı kontrolü varsa çökmemesi için
-        title: 'Hata'
+        user: null
     });
 });
 
-// EJS View Engine ayarları
-// Bu satırı bul ve tam olarak böyle değiştir:
-app.set('views', path.join(__dirname, '..', 'views'));
-app.set('view engine', 'ejs');
-// --- TÜM ROTALARIN ÜSTÜNE EKLE ---
-app.use((req, res, next) => {
-  // Eğer session varsa user'ı, yoksa null değerini global 'sessionUser' olarak tanımlar
-  res.locals.sessionUser = (req.session && req.session.user) ? req.session.user : null;
-  next();
-});
-app.get('/auth/login', (req, res) => {
-    // EJS dosyanın içinde hata mesajı veya başka değişkenler varsa, 
-    // onları burada 'null' veya boş string olarak tanımlaman şarttır.
-    res.render('auth/login', { 
-        error: null,    // Eğer login.ejs içinde 'error' kullanılıyorsa
-        message: null   // Eğer login.ejs içinde 'message' kullanılıyorsa
-    });
-});
-
-// --- Mock Middleware (Daha önce tanımladığın requireLogin vb. buraya gelecek) ---
-const requireLogin = (req, res, next) => {
-    // Session kontrol mantığın buraya
-    next();
-};
-
-// --- Rotalar (Routes) ---
-// --- TÜM ROTALARIN ÜSTÜNE EKLE ---
-app.use((req, res, next) => {
-  // Eğer session varsa user'ı, yoksa null değerini global 'sessionUser' olarak tanımlar
-  res.locals.sessionUser = (req.session && req.session.user) ? req.session.user : null;
-  next();
-});
-// 1. Ana Sayfa Rotası (404 hatasını çözen en kritik kısım)
-app.get('/', (req, res) => {
-    // Kullanıcıyı direkt login sayfasına veya dashboard'a yönlendir
-    res.redirect('/auth/login');
-});
-// --- TÜM ROTALARIN ÜSTÜNE EKLE ---
-app.use((req, res, next) => {
-  // Eğer session varsa user'ı, yoksa null değerini global 'sessionUser' olarak tanımlar
-  res.locals.sessionUser = (req.session && req.session.user) ? req.session.user : null;
-  next();
-});
-// 2. Auth Rotaları
-app.get('/auth/login', (req, res) => {
-    res.render('auth/login');
-});
-// --- TÜM ROTALARIN ÜSTÜNE EKLE ---
-app.use((req, res, next) => {
-  // Eğer session varsa user'ı, yoksa null değerini global 'sessionUser' olarak tanımlar
-  res.locals.sessionUser = (req.session && req.session.user) ? req.session.user : null;
-  next();
-});
-app.get('/auth/register', (req, res) => {
-    res.render('auth/register');
-});
-// --- TÜM ROTALARIN ÜSTÜNE EKLE ---
-app.use((req, res, next) => {
-  // Eğer session varsa user'ı, yoksa null değerini global 'sessionUser' olarak tanımlar
-  res.locals.sessionUser = (req.session && req.session.user) ? req.session.user : null;
-  next();
-});
-// 3. Öğrenci Paneli Rotaları
-app.get('/student/dashboard', requireLogin, (req, res) => {
-    res.render('student/dashboard');
-});
-// --- TÜM ROTALARIN ÜSTÜNE EKLE ---
-app.use((req, res, next) => {
-  // Eğer session varsa user'ı, yoksa null değerini global 'sessionUser' olarak tanımlar
-  res.locals.sessionUser = (req.session && req.session.user) ? req.session.user : null;
-  next();
-});
-app.get('/student/workspace', requireLogin, (req, res) => {
-    res.render('student/workspace', { review: null, error: null });
-});
-// --- TÜM ROTALARIN ÜSTÜNE EKLE ---
-app.use((req, res, next) => {
-  // Eğer session varsa user'ı, yoksa null değerini global 'sessionUser' olarak tanımlar
-  res.locals.sessionUser = (req.session && req.session.user) ? req.session.user : null;
-  next();
-});
-// 4. Leaderboard Rotası
-app.get('/leaderboard', requireLogin, async (req, res) => {
-    try {
-        // Burada db.getLeaderboard gibi fonksiyonlarını çağırabilirsin
-        res.render('leaderboard', { leaderBoard: [], myScore: 0 });
-    } catch (err) {
-        res.render('error', { message: 'Liderlik tablosu yüklenemedi.' });
-    }
-});
-
-// --- Hata Yönetimi ---
-app.use((req, res) => {
-    res.status(404).render('error', { message: 'Sayfa bulunamadı.' });
-});
-
-// --- Vercel İçin Kritik Export ---
-// Bu satır olmazsa Vercel projeyi çalıştıramaz
+// 5. Vercel için kritik nokta: app.listen KULLANMIYORUZ
 module.exports = app;
-
-// --- Yerel Geliştirme (Local Dev) ---
-// Sadece localhost'ta çalışırken portu dinle
-if (process.env.NODE_ENV !== 'production') {
-    const PORT = process.env.PORT || 3000;
-    app.listen(PORT, () => {
-        console.log(`StudyAI Erlangen'de http://localhost:${PORT} üzerinde çalışıyor.`);
-    });
-}// ... (Senin o 380 satırlık kodun burada devam ediyor olsun) ...
-
-// --- BU KISMI EN ALTA EKLE ---
-// --- TÜM ROTALARIN ÜSTÜNE EKLE ---
-app.use((req, res, next) => {
-  // Eğer session varsa user'ı, yoksa null değerini global 'sessionUser' olarak tanımlar
-  res.locals.sessionUser = (req.session && req.session.user) ? req.session.user : null;
-  next();
-});
-// 1. Ana sayfa isteği gelince ne yapacağını bilemediği için 404 veriyordu, bunu ekle:
-app.get('/', (req, res) => {
-    res.redirect('/auth/login'); 
-});
-
-// 2. Vercel'in senin bu devasa 380 satırlık kodu "fonksiyon" olarak görmesi için:
-module.exports = app;
-
-// 3. Mevcut app.listen satırını şu şekilde değiştir ki Vercel ile çakışmasın:
-if (process.env.NODE_ENV !== 'production') {
-    const PORT = process.env.PORT || 3000;
-    app.listen(PORT, () => console.log(`Local dev: http://localhost:${PORT}`));
-}
