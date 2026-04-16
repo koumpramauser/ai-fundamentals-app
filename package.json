@@ -12,10 +12,12 @@
     "@supabase/supabase-js": "^2.45.0",
     "bcryptjs": "^2.4.3",
     "connect-pg-simple": "^9.0.1",
+    "cookie-parser": "^1.4.7",
     "dotenv": "^17.4.0",
     "ejs": "^3.1.x",
     "express": "^4.19.2",
     "express-session": "^1.18.0",
+    "jsonwebtoken": "^9.0.3",
     "method-override": "^3.0.0"
   },
   "devDependencies": {

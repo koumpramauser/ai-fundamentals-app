@@ -11,7 +11,7 @@
         <a href="/leaderboard">Leaderboard</a>
       <% } %>
       <span style="color:rgba(255,255,255,.6);font-size:.85rem">Hello, <%= sessionUser.name.split(' ')[0] %></span>
-      <a href="/logout" class="btn-logout">Log Out</a>
+      <a href="/auth/logout" class="btn-logout">Log Out</a>
     <% } else { %>
       <a href="/login">Login</a>
       <a href="/register">Register</a>
