@@ -268,12 +268,18 @@ app.post('/student/workspace/review', requireAuth, async (req, res) => {
 // ════════════════════════════════════
 app.get('/leaderboard', requireAuth, async (req, res) => {
     try {
-        const { data: leaderboard } = await supabase
-            .from('scores').select('total_points, users(id, name)').order('total_points', { ascending: false }).limit(50);
-        res.render('leaderboard', { title: 'Leaderboard', leaderboard: leaderboard || [] });
+        const [leaderboardRes, myScoreRes] = await Promise.all([
+            supabase.from('scores').select('total_points, last_updated, users(id, name)').order('total_points', { ascending: false }).limit(50),
+            supabase.from('scores').select('total_points').eq('user_id', req.user.id).single()
+        ]);
+        res.render('leaderboard', {
+            title: 'Leaderboard',
+            leaderboard: leaderboardRes.data || [],
+            myScore: myScoreRes.data || { total_points: 0 }
+        });
     } catch (err) {
         console.error('Leaderboard error:', err);
-        res.render('leaderboard', { title: 'Leaderboard', leaderboard: [] });
+        res.render('leaderboard', { title: 'Leaderboard', leaderboard: [], myScore: { total_points: 0 } });
     }
 });
 
