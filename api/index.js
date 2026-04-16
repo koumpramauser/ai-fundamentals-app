@@ -1,124 +1,80 @@
 const express = require('express');
 const path = require('path');
 const dotenv = require('dotenv');
+const session = require('express-session');
+const { createClient } = require('@supabase/supabase-js');
+const bcrypt = require('bcryptjs');
 
-// Load environment variables
 dotenv.config();
 
+// Supabase Bağlantısı
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 const app = express();
 
-// --- View Engine Configuration ---
-// Fixed the path for Vercel to find the views folder correctly
-app.set('views', path.join(__dirname, '..', 'views'));
 app.set('view engine', 'ejs');
-
-// --- Standard Middleware ---
+app.set('views', path.join(__dirname, '..', 'views'));
+app.use(express.static(path.join(__dirname, '..', 'public')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, '..', 'public')));
 
-// --- Session Global Variables Middleware ---
-// This ensures Navbar and other pages don't crash when checking for user session
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'fau-ai-study-secret',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: process.env.NODE_ENV === 'production' }
+}));
+
 app.use((req, res, next) => {
     res.locals.sessionUser = (req.session && req.session.user) ? req.session.user : null;
+    res.locals.title = 'StudyAI - FAU';
     next();
 });
 
-// --- Auth Check Middleware (requireLogin) ---
-const requireLogin = (req, res, next) => {
-    // If you have a real session logic, check it here
-    // For now, it proceeds to avoid blocking you
-    next();
-};
+// --- ROTALAR ---
+app.get('/', (req, res) => res.redirect('/auth/login'));
+app.get('/login', (req, res) => res.redirect('/auth/login'));
+app.get('/register', (req, res) => res.redirect('/auth/register'));
 
-// --- Routes ---
-
-// 1. Home Route (Root) - Redirects to login to avoid 404
-app.get('/', (req, res) => {
-    res.redirect('/auth/login');
-});
-
-// 2. Authentication Routes
-app.get('/auth/login', (req, res) => {
-    res.render('auth/login', { 
-        error: null, 
-        message: null,
-        title: 'Login'
-    });
-});
-
-app.get('/auth/register', (req, res) => {
-    res.render('auth/register', { 
-        error: null,
-        title: 'Register'
-    });
-});
-
-// 3. Student Panel Routes
-app.get('/student/dashboard', requireLogin, (req, res) => {
-    res.render('student/dashboard', {
-        title: 'Dashboard'
-    });
-});
-
-app.get('/student/workspace', requireLogin, (req, res) => {
-    res.render('student/workspace', { 
-        review: null, 
-        error: null,
-        title: 'Workspace'
-    });
-});
-
-// 4. Leaderboard Route
-app.get('/leaderboard', requireLogin, async (req, res) => {
+// LOGIN
+app.get('/auth/login', (req, res) => res.render('auth/login', { error: null, message: null }));
+app.post('/auth/login', async (req, res) => {
+    const { email, password } = req.body;
     try {
-        // Integrate your Supabase/DB logic here
-        res.render('leaderboard', { 
-            leaderBoard: [], 
-            myScore: 0,
-            title: 'Leaderboard'
-        });
-    } catch (err) {
-        res.status(500).render('error', { 
-            message: 'Leaderboard could not be loaded.',
-            error: err,
-            user: null,
-            title: 'Error'
-        });
-    }
+        const { data: user, error } = await supabase.from('users').select('*').eq('email', email).single();
+        if (error || !user) return res.render('auth/login', { error: 'Kullanıcı bulunamadı.', message: null });
+        
+        // Supabase'deki düz yazı şifreler burada hata verir!
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) return res.render('auth/login', { error: 'Hatalı şifre.', message: null });
+        
+        req.session.user = { id: user.id, email: user.email, role: user.role };
+        res.redirect('/student/dashboard'); // 404 aldığın yer burasıydı, rotayı aşağıya ekledim
+    } catch (err) { res.render('auth/login', { error: 'Giriş hatası oluştu.', message: null }); }
 });
 
-// --- Error Handling ---
-
-// 404 Handler
-app.use((req, res) => {
-    res.status(404).render('error', { 
-        message: 'Page Not Found',
-        error: { status: 404 },
-        user: null,
-        title: '404'
-    });
+// DASHBOARD (EKSİK OLAN ROTA BUYDU)
+app.get('/student/dashboard', (req, res) => {
+    if (!req.session.user) return res.redirect('/auth/login');
+    res.render('student/dashboard', { title: 'Dashboard' });
 });
 
-// 500 Global Error Handler
-app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).render('error', { 
-        message: 'Something went wrong!',
-        error: err,
-        user: null,
-        title: '500 Error'
-    });
+// REGISTER
+app.get('/auth/register', (req, res) => res.render('auth/register', { error: null }));
+app.post('/auth/register', async (req, res) => {
+    const { email, password, confirmPassword } = req.body;
+    if (password !== confirmPassword) return res.render('auth/register', { error: 'Şifreler uyuşmuyor.' });
+    try {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const { error } = await supabase.from('users').insert([{ email, password: hashedPassword, role: 'student' }]);
+        if (error) throw error;
+        res.render('auth/login', { error: null, message: 'Kayıt başarılı! Giriş yapabilirsin.' });
+    } catch (err) { res.render('auth/register', { error: 'Kayıt hatası.' }); }
 });
 
-// --- Vercel Export ---
-// Essential for Vercel serverless deployment
+app.use((req, res) => res.status(404).render('error', { 
+    message: 'Sayfa Bulunamadı', 
+    error: {status:404}, 
+    sessionUser: res.locals.sessionUser 
+}));
+
 module.exports = app;
-
-// --- Local Development ---
-if (process.env.NODE_ENV !== 'production') {
-    const PORT = process.env.PORT || 3000;
-    app.listen(PORT, () => {
-        console.log(`StudyAI is running locally at http://localhost:${PORT}`);
-    });
-}
