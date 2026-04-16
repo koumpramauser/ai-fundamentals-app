@@ -258,8 +258,9 @@ app.post('/student/workspace/review', requireAuth, async (req, res) => {
         const review = await reviewPseudocode({ algorithmName, pseudocode });
         res.render('student/workspace', { title: 'Pseudo-code Workspace', review, error: null, algorithmName, pseudocode });
     } catch (err) {
-        console.error('Workspace error:', err);
-        res.render('student/workspace', { title: 'Pseudo-code Workspace', review: null, error: 'AI review failed. Please try again.', algorithmName, pseudocode });
+        console.error('Workspace Gemini error:', err?.message || err);
+        const errorMsg = `AI review failed: ${err?.message || 'Unknown error'}. Check your GEMINI_API_KEY in Vercel.`;
+        res.render('student/workspace', { title: 'Pseudo-code Workspace', review: null, error: errorMsg, algorithmName, pseudocode });
     }
 });
 
