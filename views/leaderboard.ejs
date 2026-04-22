@@ -11,6 +11,7 @@
   </div>
 
   <!-- My Score -->
+  <% if (sessionUser) { %>
   <div class="card mb-3" style="background:var(--primary-lt);border-color:#93c5fd">
     <div class="flex-between">
       <div>
@@ -22,6 +23,11 @@
       </div>
     </div>
   </div>
+  <% } else { %>
+  <div class="card mb-3 alert-info" style="font-size:.93rem">
+    <a href="/auth/register" style="font-weight:700">Register</a> or <a href="/auth/login" style="font-weight:700">log in</a> to appear on the leaderboard and track your score.
+  </div>
+  <% } %>
 
   <div class="card">
     <% if (leaderboard.length === 0) { %>

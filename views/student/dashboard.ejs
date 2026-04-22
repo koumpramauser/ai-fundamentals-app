@@ -6,13 +6,20 @@
   <div class="card mb-3" style="background:linear-gradient(120deg,var(--primary) 0%,#2a60c8 100%);color:#fff;border:none">
     <div class="flex-between">
       <div>
-        <div style="font-family:var(--font-head);font-size:1.3rem;font-weight:700;margin-bottom:.2rem">Welcome back, <%= sessionUser.name.split(' ')[0] %>!</div>
-        <div style="opacity:.85;font-size:.92rem">Keep learning and climb the leaderboard.</div>
+        <% if (sessionUser) { %>
+          <div style="font-family:var(--font-head);font-size:1.3rem;font-weight:700;margin-bottom:.2rem">Welcome back, <%= sessionUser.name.split(' ')[0] %>!</div>
+          <div style="opacity:.85;font-size:.92rem">Keep learning and climb the leaderboard.</div>
+        <% } else { %>
+          <div style="font-family:var(--font-head);font-size:1.3rem;font-weight:700;margin-bottom:.2rem">Welcome to StudyAI — FAU!</div>
+          <div style="opacity:.85;font-size:.92rem"><a href="/auth/register" style="color:#ffd47e;font-weight:700">Register</a> or <a href="/auth/login" style="color:#ffd47e;font-weight:700">Log in</a> to track your score and join the leaderboard.</div>
+        <% } %>
       </div>
+      <% if (sessionUser) { %>
       <div style="text-align:right">
         <div style="font-size:.8rem;opacity:.75;margin-bottom:.2rem">Your Total Score</div>
         <div style="font-size:2rem;font-weight:800"><%= score.total_points %> <span style="font-size:.9rem;opacity:.8">pts</span></div>
       </div>
+      <% } %>
     </div>
   </div>
 

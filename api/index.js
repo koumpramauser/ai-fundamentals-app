@@ -58,7 +58,7 @@ function requireAdmin(req, res, next) {
 }
 
 // ── Redirects ──
-app.get('/', (req, res) => res.redirect('/auth/login'));
+app.get('/', (req, res) => res.redirect('/student/dashboard'));
 app.get('/login', (req, res) => res.redirect('/auth/login'));
 app.get('/register', (req, res) => res.redirect('/auth/register'));
 app.get('/logout', (req, res) => res.redirect('/auth/logout'));
@@ -130,18 +130,21 @@ app.post('/auth/register', async (req, res) => {
 // ════════════════════════════════════
 // STUDENT — DASHBOARD
 // ════════════════════════════════════
-app.get('/student/dashboard', requireAuth, async (req, res) => {
+app.get('/student/dashboard', async (req, res) => {
     try {
-        const [topicsRes, scoreRes, leaderboardRes] = await Promise.all([
+        const queries = [
             supabase.from('topics').select('*').order('created_at', { ascending: true }),
-            supabase.from('scores').select('total_points').eq('user_id', req.user.id).single(),
             supabase.from('scores').select('total_points, users(id, name)').order('total_points', { ascending: false }).limit(10)
-        ]);
+        ];
+        if (req.user) {
+            queries.push(supabase.from('scores').select('total_points').eq('user_id', req.user.id).single());
+        }
+        const results = await Promise.all(queries);
         res.render('student/dashboard', {
             title: 'Dashboard',
-            topics: topicsRes.data || [],
-            score: scoreRes.data || { total_points: 0 },
-            leaderboard: leaderboardRes.data || []
+            topics: results[0].data || [],
+            leaderboard: results[1].data || [],
+            score: req.user ? (results[2]?.data || { total_points: 0 }) : { total_points: 0 }
         });
     } catch (err) {
         console.error('Dashboard error:', err);
@@ -152,7 +155,7 @@ app.get('/student/dashboard', requireAuth, async (req, res) => {
 // ════════════════════════════════════
 // STUDENT — TOPIC (Read Summary)
 // ════════════════════════════════════
-app.get('/student/topics/:id', requireAuth, async (req, res) => {
+app.get('/student/topics/:id', async (req, res) => {
     try {
         const { data: topic, error } = await supabase.from('topics').select('*').eq('id', req.params.id).single();
         if (error || !topic) return res.redirect('/student/dashboard');
@@ -167,7 +170,7 @@ app.get('/student/topics/:id', requireAuth, async (req, res) => {
 // ════════════════════════════════════
 // STUDENT — PRACTICE
 // ════════════════════════════════════
-app.get('/student/topics/:id/practice', requireAuth, async (req, res) => {
+app.get('/student/topics/:id/practice', async (req, res) => {
     try {
         const { data: topic } = await supabase.from('topics').select('*').eq('id', req.params.id).single();
         if (!topic) return res.redirect('/student/dashboard');
@@ -245,11 +248,11 @@ app.post('/student/topics/:id/practice', requireAuth, async (req, res) => {
 // ════════════════════════════════════
 // STUDENT — WORKSPACE
 // ════════════════════════════════════
-app.get('/student/workspace', requireAuth, (req, res) => {
+app.get('/student/workspace', (req, res) => {
     res.render('student/workspace', { title: 'Pseudo-code Workspace', review: null, error: null, algorithmName: null, pseudocode: null });
 });
 
-app.post('/student/workspace/review', requireAuth, async (req, res) => {
+app.post('/student/workspace/review', async (req, res) => {
     const { algorithmName, pseudocode } = req.body;
     if (!pseudocode || pseudocode.trim().length < 10) {
         return res.render('student/workspace', { title: 'Pseudo-code Workspace', review: null, error: 'Please enter your pseudo-code before requesting a review.', algorithmName, pseudocode });
@@ -272,16 +275,19 @@ app.post('/student/workspace/review', requireAuth, async (req, res) => {
 // ════════════════════════════════════
 // LEADERBOARD
 // ════════════════════════════════════
-app.get('/leaderboard', requireAuth, async (req, res) => {
+app.get('/leaderboard', async (req, res) => {
     try {
-        const [leaderboardRes, myScoreRes] = await Promise.all([
-            supabase.from('scores').select('total_points, last_updated, users(id, name)').order('total_points', { ascending: false }).limit(50),
-            supabase.from('scores').select('total_points').eq('user_id', req.user.id).single()
-        ]);
+        const queries = [
+            supabase.from('scores').select('total_points, last_updated, users(id, name)').order('total_points', { ascending: false }).limit(50)
+        ];
+        if (req.user) {
+            queries.push(supabase.from('scores').select('total_points').eq('user_id', req.user.id).single());
+        }
+        const results = await Promise.all(queries);
         res.render('leaderboard', {
             title: 'Leaderboard',
-            leaderboard: leaderboardRes.data || [],
-            myScore: myScoreRes.data || { total_points: 0 }
+            leaderboard: results[0].data || [],
+            myScore: req.user ? (results[1]?.data || { total_points: 0 }) : { total_points: 0 }
         });
     } catch (err) {
         console.error('Leaderboard error:', err);
