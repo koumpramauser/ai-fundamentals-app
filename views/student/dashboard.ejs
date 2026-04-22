@@ -26,23 +26,45 @@
   <div style="display:grid;grid-template-columns:1fr 320px;gap:1.5rem;align-items:start" class="main-grid">
     <!-- Topics -->
     <div>
-      <div class="section-title">Study Topics (<%= topics.length %>)</div>
+      <div class="flex-between mb-2" style="align-items:center">
+        <div class="section-title mb-0">Study Topics (<%= topics.length %>)</div>
+        <input type="text" id="topic-search" placeholder="🔍 Search topics..." style="padding:.4rem .8rem;border:1.5px solid var(--border);border-radius:8px;font-size:.85rem;width:200px;outline:none" oninput="filterTopics(this.value)" />
+      </div>
       <% if (topics.length === 0) { %>
         <div class="alert alert-info">Your instructor hasn't added any topics yet. Check back soon!</div>
       <% } else { %>
-      <div class="grid-2">
+      <div class="grid-2" id="topics-grid">
         <% topics.forEach((t, i) => { %>
-        <div class="card" style="display:flex;flex-direction:column;gap:.75rem">
+        <%
+          const prog = topicProgress[t.id];
+          const pct = prog ? prog.pct : 0;
+          const earned = prog ? prog.earned : 0;
+          const maxPts = prog ? prog.max : 0;
+          const barColor = pct >= 80 ? '#15803d' : pct >= 40 ? '#d97706' : '#002F6C';
+        %>
+        <div class="card topic-card" data-title="<%= t.title.toLowerCase() %>" style="display:flex;flex-direction:column;gap:.6rem">
           <div>
-            <div style="font-weight:700;font-size:1rem;color:var(--text);margin-bottom:.3rem"><%= t.title %></div>
+            <div style="font-weight:700;font-size:1rem;color:var(--text);margin-bottom:.25rem"><%= t.title %></div>
             <p class="text-muted" style="font-size:.85rem;line-height:1.55"><%= t.summary_text ? t.summary_text.substring(0, 100) + '...' : 'Explore this topic.' %></p>
           </div>
+          <% if (sessionUser && maxPts > 0) { %>
+          <div>
+            <div class="flex-between" style="font-size:.75rem;color:var(--text-muted);margin-bottom:.25rem">
+              <span>Progress</span>
+              <span><%= earned %> / <%= maxPts %> pts &nbsp;·&nbsp; <%= pct %>%</span>
+            </div>
+            <div style="height:6px;background:var(--surface2);border-radius:99px;overflow:hidden">
+              <div style="height:100%;width:<%= pct %>%;background:<%= barColor %>;border-radius:99px;transition:width .6s ease"></div>
+            </div>
+          </div>
+          <% } %>
           <% if (t.podcast_url) { %>
           <a href="<%= t.podcast_url %>" target="_blank" rel="noopener" style="font-size:.83rem;color:var(--accent);font-weight:600">🎙 Listen to Podcast</a>
           <% } %>
-          <div class="flex gap-1" style="margin-top:auto">
+          <div class="flex gap-1" style="margin-top:auto;flex-wrap:wrap">
             <a href="/student/topics/<%= t.id %>" class="btn btn-outline btn-sm">Read Summary</a>
             <a href="/student/topics/<%= t.id %>/practice" class="btn btn-accent btn-sm">Practice</a>
+            <a href="/student/topics/<%= t.id %>/flashcards" class="btn btn-sm" style="background:#f0f4ff;color:#002F6C;border:1.5px solid #c5d3f0">🃏 Flashcards</a>
           </div>
         </div>
         <% }) %>
@@ -83,6 +105,18 @@
 @media (max-width: 740px) {
   .main-grid { grid-template-columns: 1fr !important; }
 }
+.topic-card { transition: box-shadow .2s; }
+.topic-card:hover { box-shadow: 0 4px 20px rgba(0,47,108,.13); }
 </style>
 
+<script>
+function filterTopics(q) {
+  document.querySelectorAll('.topic-card').forEach(card => {
+    const title = card.dataset.title || '';
+    card.style.display = title.includes(q.toLowerCase()) ? '' : 'none';
+  });
+}
+</script>
+
+<%- include('../partials/study-buddy.ejs') %>
 <%- include('../partials/footer') %>

@@ -138,19 +138,42 @@ app.get('/student/dashboard', async (req, res) => {
         ];
         if (req.user) {
             queries.push(supabase.from('scores').select('total_points').eq('user_id', req.user.id).single());
+            queries.push(supabase.from('answers').select('score, questions(topic_id, points)').eq('user_id', req.user.id));
+            queries.push(supabase.from('questions').select('id, topic_id, points'));
         }
         const results = await Promise.all(queries);
-        res.render('student/dashboard', {
-            title: 'Dashboard',
-            topics: results[0].data || [],
-            leaderboard: results[1].data || [],
-            score: req.user ? (results[2]?.data || { total_points: 0 }) : { total_points: 0 }
-        });
+        const topics = results[0].data || [];
+        const leaderboard = results[1].data || [];
+        const score = req.user ? (results[2]?.data || { total_points: 0 }) : { total_points: 0 };
+
+        // Build per-topic progress map { topicId: { pct, earned, max } }
+        const topicProgress = {};
+        if (req.user && results[3]?.data && results[4]?.data) {
+            const allQuestions = results[4].data;
+            const userAnswers = results[3].data;
+            allQuestions.forEach(q => {
+                if (!topicProgress[q.topic_id]) topicProgress[q.topic_id] = { max: 0, earned: 0 };
+                topicProgress[q.topic_id].max += (q.points || 10);
+            });
+            userAnswers.forEach(a => {
+                const tid = a.questions?.topic_id;
+                if (!tid || !topicProgress[tid]) return;
+                topicProgress[tid].earned += (a.score || 0);
+            });
+            Object.keys(topicProgress).forEach(tid => {
+                const t = topicProgress[tid];
+                t.earned = Math.min(t.earned, t.max);
+                t.pct = t.max > 0 ? Math.round((t.earned / t.max) * 100) : 0;
+            });
+        }
+
+        res.render('student/dashboard', { title: 'Dashboard', topics, leaderboard, score, topicProgress });
     } catch (err) {
         console.error('Dashboard error:', err);
-        res.render('student/dashboard', { title: 'Dashboard', topics: [], score: { total_points: 0 }, leaderboard: [] });
+        res.render('student/dashboard', { title: 'Dashboard', topics: [], score: { total_points: 0 }, leaderboard: [], topicProgress: {} });
     }
 });
+
 
 // ════════════════════════════════════
 // STUDENT — TOPIC (Read Summary)
