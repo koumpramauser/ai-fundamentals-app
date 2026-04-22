@@ -10,15 +10,16 @@
     /* ── RESET & BASE ── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bg:        #f5f6fa;
+      --bg:        #f4f6fb;
       --surface:   #ffffff;
-      --surface2:  #eef0f7;
-      --border:    #d8dce8;
-      --text:      #1a1d2e;
-      --text-muted:#6b7280;
-      --primary:   #1c4b9e;
-      --primary-lt:#dde8ff;
-      --accent:    #e86c2c;
+      --surface2:  #ebeef6;
+      --border:    #d0d6e8;
+      --text:      #0d1224;
+      --text-muted:#5a6278;
+      --primary:   #002F6C;
+      --primary-mid:#1a4d99;
+      --primary-lt:#dde7f7;
+      --accent:    #4a90d9;
       --success:   #15803d;
       --success-lt:#dcfce7;
       --error:     #b91c1c;
@@ -26,7 +27,7 @@
       --warn:      #b45309;
       --warn-lt:   #fef3c7;
       --radius:    10px;
-      --shadow:    0 2px 12px rgba(28,75,158,.08);
+      --shadow:    0 2px 14px rgba(0,47,108,.10);
       --font-body: 'Lato', 'Calibri', sans-serif;
       --font-head: 'Merriweather', 'Georgia', serif;
     }
@@ -37,14 +38,14 @@
 
     /* ── NAVBAR ── */
     .navbar {
-      background: var(--primary);
+      background: linear-gradient(90deg, #002F6C 0%, #1a4d99 100%);
       color: #fff;
       padding: 0 2rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      height: 58px;
-      box-shadow: 0 2px 8px rgba(0,0,0,.15);
+      height: 62px;
+      box-shadow: 0 2px 10px rgba(0,47,108,.25);
       position: sticky; top: 0; z-index: 100;
     }
     .navbar-brand { font-family: var(--font-head); font-size: 1.2rem; font-weight: 700; color: #fff; letter-spacing: .4px; }

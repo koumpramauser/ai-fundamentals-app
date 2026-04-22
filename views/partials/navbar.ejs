@@ -1,7 +1,11 @@
 <nav class="navbar">
-  <a href="/student/dashboard" class="navbar-brand" style="display:flex;align-items:center;gap:.6rem">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Siegel_der_Friedrich-Alexander-Universit%C3%A4t_Erlangen-N%C3%BCrnberg.svg/200px-Siegel_der_Friedrich-Alexander-Universit%C3%A4t_Erlangen-N%C3%BCrnberg.svg.png" alt="FAU" style="height:32px;width:32px;border-radius:50%;background:#fff;padding:1px" />
-    Study<span>AI</span> &mdash; FAU
+  <a href="/student/dashboard" class="navbar-brand" style="display:flex;align-items:center;gap:.75rem;text-decoration:none">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/75/FAU_Logo.svg/200px-FAU_Logo.svg.png"
+         alt="FAU"
+         style="height:30px;filter:brightness(0) invert(1);opacity:.95" />
+    <span style="font-family:var(--font-head);font-size:1.1rem;font-weight:700;color:#fff;letter-spacing:.3px">
+      Study<span style="color:#7ab3f0">AI</span>
+    </span>
   </a>
   <div class="navbar-links">
     <a href="/student/dashboard">My Learning</a>
@@ -10,12 +14,12 @@
     <% if (sessionUser) { %>
       <span style="color:rgba(255,255,255,.6);font-size:.85rem">Hello, <%= sessionUser.name.split(' ')[0] %></span>
       <% if (sessionUser.role === 'admin') { %>
-        <a href="/admin/dashboard" class="btn-logout" style="background:rgba(255,200,0,.25);border-color:rgba(255,200,0,.4)">Admin</a>
+        <a href="/admin/dashboard" class="btn-logout" style="background:rgba(122,179,240,.2);border-color:rgba(122,179,240,.4)">⚙ Admin</a>
       <% } %>
       <a href="/auth/logout" class="btn-logout">Log Out</a>
     <% } else { %>
       <a href="/auth/login" class="btn-logout">Login</a>
-      <a href="/auth/register" class="btn-logout" style="background:rgba(255,255,255,.25)">Register</a>
+      <a href="/auth/register" class="btn-logout" style="background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.4)">Register</a>
     <% } %>
   </div>
 </nav>
