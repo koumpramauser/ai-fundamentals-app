@@ -1,0 +1,191 @@
+<%- include('../partials/header', { title: 'Student Forum' }) %>
+<%- include('../partials/navbar') %>
+
+<div class="page">
+  <div class="flex-between mb-3">
+    <div>
+      <div class="page-title">💬 Student Feedback Forum</div>
+      <div class="page-sub">Share your ideas to improve course content. Vote on suggestions you agree with!</div>
+    </div>
+    <a href="/student/dashboard" class="btn btn-outline btn-sm">← Dashboard</a>
+  </div>
+
+  <% if (typeof successMsg !== 'undefined' && successMsg) { %>
+    <div class="alert alert-success"><%= successMsg %></div>
+  <% } %>
+  <% if (typeof errorMsg !== 'undefined' && errorMsg) { %>
+    <div class="alert alert-error"><%= errorMsg %></div>
+  <% } %>
+
+  <!-- New Suggestion Form -->
+  <div class="card mb-3" id="new-post-card">
+    <div class="flex-between" style="cursor:pointer" onclick="toggleNewPost()">
+      <div style="font-weight:700;font-size:1rem;color:var(--primary)">✨ New Suggestion</div>
+      <span id="toggle-icon" style="font-size:1.2rem;transition:transform .3s">▼</span>
+    </div>
+    <div id="new-post-form" style="display:none;margin-top:1.2rem">
+      <% if (!sessionUser) { %>
+        <div class="alert alert-info">Please <a href="/auth/login" style="font-weight:700">log in</a> to submit a suggestion.</div>
+      <% } else { %>
+      <form method="POST" action="/forum">
+        <div class="form-group">
+          <label for="post-title">Title</label>
+          <input type="text" id="post-title" name="title" placeholder="e.g. Add more examples to Topic 3" required maxlength="200" />
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+          <div class="form-group">
+            <label for="post-category">Category</label>
+            <select id="post-category" name="category">
+              <option value="general">💡 General Feedback</option>
+              <option value="content_quality">📝 Content Quality</option>
+              <option value="missing_topic">📚 Missing Topic</option>
+              <option value="question_issue">❓ Question Issue</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="post-topic">Related Topic <span class="text-muted" style="font-weight:400">(optional)</span></label>
+            <select id="post-topic" name="topic_id">
+              <option value="">— None (General) —</option>
+              <% topics.forEach(t => { %>
+                <option value="<%= t.id %>"><%= t.title %></option>
+              <% }) %>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="post-body">Your Suggestion</label>
+          <textarea id="post-body" name="body" rows="4" placeholder="Describe your idea in detail. What would you change? Why would it help?" required maxlength="2000"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit Suggestion</button>
+      </form>
+      <% } %>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="card mb-2" style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;padding:.8rem 1.5rem">
+    <span style="font-weight:700;font-size:.85rem;color:var(--text-muted)">Filter:</span>
+    <a href="/forum" class="filter-btn <%= !currentCategory && !currentStatus ? 'active' : '' %>">All</a>
+    <span style="color:var(--border)">|</span>
+    <a href="/forum?category=content_quality" class="filter-btn <%= currentCategory === 'content_quality' ? 'active' : '' %>">📝 Content</a>
+    <a href="/forum?category=missing_topic" class="filter-btn <%= currentCategory === 'missing_topic' ? 'active' : '' %>">📚 Missing Topic</a>
+    <a href="/forum?category=question_issue" class="filter-btn <%= currentCategory === 'question_issue' ? 'active' : '' %>">❓ Questions</a>
+    <a href="/forum?category=general" class="filter-btn <%= currentCategory === 'general' ? 'active' : '' %>">💡 General</a>
+    <span style="color:var(--border)">|</span>
+    <a href="/forum?status=open" class="filter-btn <%= currentStatus === 'open' ? 'active' : '' %>">🟢 Open</a>
+    <a href="/forum?status=in_progress" class="filter-btn <%= currentStatus === 'in_progress' ? 'active' : '' %>">🟡 In Progress</a>
+    <a href="/forum?status=resolved" class="filter-btn <%= currentStatus === 'resolved' ? 'active' : '' %>">✅ Resolved</a>
+  </div>
+
+  <!-- Posts List -->
+  <% if (posts.length === 0) { %>
+    <div class="card" style="text-align:center;padding:3rem">
+      <div style="font-size:2.5rem;margin-bottom:1rem">🤷</div>
+      <div style="font-size:1.1rem;font-weight:700;margin-bottom:.5rem">No suggestions yet</div>
+      <p class="text-muted">Be the first to share your ideas!</p>
+    </div>
+  <% } else { %>
+    <div id="posts-list">
+      <% posts.forEach(post => { %>
+      <%
+        const catIcons = { content_quality: '📝', missing_topic: '📚', question_issue: '❓', general: '💡' };
+        const catLabels = { content_quality: 'Content', missing_topic: 'Missing Topic', question_issue: 'Question', general: 'General' };
+        const statusColors = { open: '#15803d', in_progress: '#d97706', resolved: '#6b7280', declined: '#b91c1c' };
+        const statusBgs = { open: '#dcfce7', in_progress: '#fef3c7', resolved: '#f3f4f6', declined: '#fee2e2' };
+        const statusLabels = { open: 'Open', in_progress: 'In Progress', resolved: 'Resolved', declined: 'Declined' };
+        const timeAgo = (d) => {
+          const diff = Date.now() - new Date(d).getTime();
+          const mins = Math.floor(diff / 60000);
+          if (mins < 60) return mins + 'm ago';
+          const hrs = Math.floor(mins / 60);
+          if (hrs < 24) return hrs + 'h ago';
+          const days = Math.floor(hrs / 24);
+          return days + 'd ago';
+        };
+        const hasVoted = post.user_voted;
+      %>
+      <div class="card forum-post" style="display:flex;gap:1.2rem;align-items:flex-start">
+        <!-- Vote Column -->
+        <div style="display:flex;flex-direction:column;align-items:center;min-width:50px">
+          <form method="POST" action="/forum/<%= post.id %>/vote" style="margin:0">
+            <button type="submit" class="vote-btn <%= hasVoted ? 'voted' : '' %>" title="<%= sessionUser ? (hasVoted ? 'Remove vote' : 'Upvote') : 'Log in to vote' %>"
+              <%= !sessionUser ? 'disabled' : '' %>>
+              ▲
+            </button>
+          </form>
+          <span class="vote-count"><%= post.votes %></span>
+        </div>
+
+        <!-- Content Column -->
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;margin-bottom:.4rem">
+            <a href="/forum/<%= post.id %>" style="font-weight:700;font-size:1rem;color:var(--text);text-decoration:none"><%= post.title %></a>
+            <span class="tag" style="background:<%= statusBgs[post.status] %>;color:<%= statusColors[post.status] %>"><%= statusLabels[post.status] %></span>
+            <span class="tag tag-gray"><%= catIcons[post.category] || '💡' %> <%= catLabels[post.category] || post.category %></span>
+          </div>
+          <p class="text-muted" style="font-size:.88rem;line-height:1.5;margin-bottom:.5rem"><%= post.body.length > 180 ? post.body.substring(0, 180) + '...' : post.body %></p>
+          <div style="display:flex;align-items:center;gap:1rem;font-size:.78rem;color:var(--text-muted)">
+            <span>by <strong><%= post.users ? post.users.name : 'Anonymous' %></strong></span>
+            <span><%= timeAgo(post.created_at) %></span>
+            <% if (post.topic_title) { %>
+              <span>📌 <%= post.topic_title %></span>
+            <% } %>
+            <a href="/forum/<%= post.id %>" style="color:var(--accent);font-weight:600"><%= post.reply_count || 0 %> replies →</a>
+          </div>
+        </div>
+      </div>
+      <% }) %>
+    </div>
+  <% } %>
+</div>
+
+<style>
+  .filter-btn {
+    font-size: .82rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    padding: .25rem .6rem;
+    border-radius: 6px;
+    transition: all .2s;
+    text-decoration: none !important;
+  }
+  .filter-btn:hover { background: var(--primary-lt); color: var(--primary); }
+  .filter-btn.active { background: var(--primary); color: #fff; }
+
+  .forum-post { transition: box-shadow .2s; }
+  .forum-post:hover { box-shadow: 0 4px 20px rgba(0,47,108,.1); }
+
+  .vote-btn {
+    background: none;
+    border: 1.5px solid var(--border);
+    border-radius: 6px;
+    width: 36px;
+    height: 30px;
+    cursor: pointer;
+    font-size: .9rem;
+    color: var(--text-muted);
+    transition: all .2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+  }
+  .vote-btn:hover:not(:disabled) { border-color: var(--primary); color: var(--primary); background: var(--primary-lt); }
+  .vote-btn.voted { border-color: var(--primary); color: var(--primary); background: var(--primary-lt); }
+  .vote-btn:disabled { opacity: .5; cursor: not-allowed; }
+  .vote-count { font-size: 1rem; font-weight: 800; color: var(--primary); margin-top: .2rem; }
+</style>
+
+<script>
+  let formOpen = false;
+  function toggleNewPost() {
+    formOpen = !formOpen;
+    document.getElementById('new-post-form').style.display = formOpen ? '' : 'none';
+    document.getElementById('toggle-icon').style.transform = formOpen ? 'rotate(180deg)' : '';
+  }
+  // Auto-open form if there's a hash
+  if (window.location.hash === '#new') toggleNewPost();
+</script>
+
+<%- include('../partials/study-buddy.ejs') %>
+<%- include('../partials/footer') %>

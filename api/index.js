@@ -191,6 +191,40 @@ app.get('/student/topics/:id', async (req, res) => {
 });
 
 // ════════════════════════════════════
+// STUDENT — FLASHCARDS
+// ════════════════════════════════════
+app.get('/student/topics/:id/flashcards', async (req, res) => {
+    try {
+        const { data: topic } = await supabase.from('topics').select('*').eq('id', req.params.id).single();
+        if (!topic) return res.redirect('/student/dashboard');
+        const { data: questions } = await supabase.from('questions').select('*').eq('topic_id', req.params.id);
+
+        // Transform questions into flashcard format
+        const cards = (questions || []).map(q => {
+            let back = '';
+            if (q.type === 'mcq' || q.type === 'tf') {
+                back = q.correct_answer || 'No answer provided';
+                if (q.type === 'mcq' && q.options && q.options.length) {
+                    const correctIdx = q.options.findIndex(o => o.toString().toLowerCase() === (q.correct_answer || '').toLowerCase());
+                    if (correctIdx >= 0) back = q.options[correctIdx];
+                }
+            } else if (q.type === 'open') {
+                const parts = [];
+                if (q.rubric) parts.push(q.rubric);
+                if (q.keywords && q.keywords.length) parts.push('Key terms: ' + q.keywords.join(', '));
+                back = parts.join('\n\n') || 'Review the topic summary for the answer.';
+            }
+            return { front: q.text, back, type: q.type };
+        });
+
+        res.render('student/flashcards', { title: 'Flashcards: ' + topic.title, topic, cards });
+    } catch (err) {
+        console.error('Flashcards error:', err);
+        res.redirect('/student/dashboard');
+    }
+});
+
+// ════════════════════════════════════
 // STUDENT — PRACTICE
 // ════════════════════════════════════
 app.get('/student/topics/:id/practice', async (req, res) => {
@@ -409,6 +443,188 @@ app.post('/admin/questions/:id/delete', requireAdmin, async (req, res) => {
     const { data: question } = await supabase.from('questions').select('topic_id').eq('id', req.params.id).single();
     await supabase.from('questions').delete().eq('id', req.params.id);
     res.redirect(`/admin/topics/${question?.topic_id}/questions`);
+});
+
+// ════════════════════════════════════
+// FORUM
+// ════════════════════════════════════
+app.get('/forum', async (req, res) => {
+    try {
+        const { category, status } = req.query;
+        let query = supabase.from('forum_posts').select('*, users(id, name, role), topics(id, title)').order('votes', { ascending: false }).order('created_at', { ascending: false });
+
+        if (category) query = query.eq('category', category);
+        if (status) query = query.eq('status', status);
+
+        const [postsRes, topicsRes] = await Promise.all([
+            query,
+            supabase.from('topics').select('id, title').order('title', { ascending: true })
+        ]);
+
+        let posts = postsRes.data || [];
+
+        // Get reply counts for all posts
+        if (posts.length > 0) {
+            const postIds = posts.map(p => p.id);
+            const { data: replyCounts } = await supabase.from('forum_replies').select('post_id').in('post_id', postIds);
+            const countMap = {};
+            (replyCounts || []).forEach(r => { countMap[r.post_id] = (countMap[r.post_id] || 0) + 1; });
+            posts = posts.map(p => ({ ...p, reply_count: countMap[p.id] || 0, topic_title: p.topics ? p.topics.title : null }));
+        }
+
+        // Check user votes
+        if (req.user) {
+            const { data: userVotes } = await supabase.from('forum_votes').select('post_id').eq('user_id', req.user.id);
+            const votedSet = new Set((userVotes || []).map(v => v.post_id));
+            posts = posts.map(p => ({ ...p, user_voted: votedSet.has(p.id) }));
+        }
+
+        res.render('student/forum', {
+            title: 'Student Forum',
+            posts,
+            topics: topicsRes.data || [],
+            currentCategory: category || null,
+            currentStatus: status || null,
+            successMsg: req.query.success || null,
+            errorMsg: req.query.error || null
+        });
+    } catch (err) {
+        console.error('Forum error:', err);
+        res.render('student/forum', { title: 'Student Forum', posts: [], topics: [], currentCategory: null, currentStatus: null, successMsg: null, errorMsg: 'Failed to load forum.' });
+    }
+});
+
+app.post('/forum', requireAuth, async (req, res) => {
+    const { title, body, category, topic_id } = req.body;
+    if (!title || !title.trim() || !body || !body.trim()) {
+        return res.redirect('/forum?error=' + encodeURIComponent('Title and body are required.'));
+    }
+    try {
+        await supabase.from('forum_posts').insert([{
+            user_id: req.user.id,
+            title: title.trim(),
+            body: body.trim(),
+            category: category || 'general',
+            topic_id: topic_id || null
+        }]);
+        res.redirect('/forum?success=' + encodeURIComponent('Your suggestion has been posted!'));
+    } catch (err) {
+        console.error('Forum post error:', err);
+        res.redirect('/forum?error=' + encodeURIComponent('Failed to create post.'));
+    }
+});
+
+app.get('/forum/:id', async (req, res) => {
+    try {
+        const { data: post } = await supabase.from('forum_posts').select('*, users(id, name, role), topics(id, title)').eq('id', req.params.id).single();
+        if (!post) return res.redirect('/forum');
+
+        const { data: replies } = await supabase.from('forum_replies').select('*, users(id, name, role)').eq('post_id', req.params.id).order('created_at', { ascending: true });
+
+        let userVoted = false;
+        if (req.user) {
+            const { data: vote } = await supabase.from('forum_votes').select('user_id').eq('user_id', req.user.id).eq('post_id', req.params.id).maybeSingle();
+            userVoted = !!vote;
+        }
+
+        res.render('student/forum-post', { title: post.title, post, replies: replies || [], userVoted });
+    } catch (err) {
+        console.error('Forum post view error:', err);
+        res.redirect('/forum');
+    }
+});
+
+app.post('/forum/:id/vote', requireAuth, async (req, res) => {
+    try {
+        const postId = req.params.id;
+        const userId = req.user.id;
+
+        // Check if already voted
+        const { data: existing } = await supabase.from('forum_votes').select('*').eq('user_id', userId).eq('post_id', postId).maybeSingle();
+
+        if (existing) {
+            // Remove vote
+            await supabase.from('forum_votes').delete().eq('user_id', userId).eq('post_id', postId);
+            await supabase.from('forum_posts').update({ votes: Math.max(0, (await supabase.from('forum_posts').select('votes').eq('id', postId).single()).data.votes - 1) }).eq('id', postId);
+        } else {
+            // Add vote
+            await supabase.from('forum_votes').insert([{ user_id: userId, post_id: postId }]);
+            const { data: post } = await supabase.from('forum_posts').select('votes').eq('id', postId).single();
+            await supabase.from('forum_posts').update({ votes: (post.votes || 0) + 1 }).eq('id', postId);
+        }
+
+        // Redirect back to where user came from
+        const referer = req.get('Referer') || '/forum';
+        res.redirect(referer);
+    } catch (err) {
+        console.error('Vote error:', err);
+        res.redirect('/forum');
+    }
+});
+
+app.post('/forum/:id/reply', requireAuth, async (req, res) => {
+    const { body } = req.body;
+    if (!body || !body.trim()) return res.redirect('/forum/' + req.params.id);
+    try {
+        await supabase.from('forum_replies').insert([{
+            post_id: req.params.id,
+            user_id: req.user.id,
+            body: body.trim()
+        }]);
+        res.redirect('/forum/' + req.params.id);
+    } catch (err) {
+        console.error('Reply error:', err);
+        res.redirect('/forum/' + req.params.id);
+    }
+});
+
+app.post('/forum/:id/status', requireAdmin, async (req, res) => {
+    const { status } = req.body;
+    const validStatuses = ['open', 'in_progress', 'resolved', 'declined'];
+    if (!validStatuses.includes(status)) return res.redirect('/forum/' + req.params.id);
+    try {
+        await supabase.from('forum_posts').update({ status }).eq('id', req.params.id);
+        res.redirect('/forum/' + req.params.id);
+    } catch (err) {
+        console.error('Status update error:', err);
+        res.redirect('/forum/' + req.params.id);
+    }
+});
+
+// ════════════════════════════════════
+// STUDY BUDDY CHATBOT
+// ════════════════════════════════════
+app.post('/api/study-buddy', async (req, res) => {
+    const { message, context } = req.body;
+    if (!message || !message.trim()) {
+        return res.json({ reply: 'Please ask a question.' });
+    }
+    try {
+        const { gradeOpenAnswer } = require('../services/gemini');
+        const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
+        const apiKey = process.env.GROQ_API_KEY;
+        if (!apiKey) return res.json({ reply: 'AI service is not configured. Please contact your instructor.' });
+
+        const response = await fetch(GROQ_API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+            body: JSON.stringify({
+                model: 'llama-3.3-70b-versatile',
+                messages: [
+                    { role: 'system', content: `You are Study Buddy, a helpful AI tutor for FAU's AI Fundamentals course. Current page context: ${context || 'StudyAI'}. Answer concisely and clearly. Focus on AI/ML topics, mathematics, and computer science.` },
+                    { role: 'user', content: message }
+                ],
+                temperature: 0.7,
+                max_tokens: 512
+            })
+        });
+        const data = await response.json();
+        const reply = data.choices?.[0]?.message?.content || 'Sorry, I could not generate a response.';
+        res.json({ reply });
+    } catch (err) {
+        console.error('Study Buddy error:', err);
+        res.json({ reply: '⚠️ AI service error. Please try again.' });
+    }
 });
 
 // ── 404 ──

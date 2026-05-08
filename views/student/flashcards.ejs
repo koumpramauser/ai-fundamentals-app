@@ -1,0 +1,305 @@
+<%- include('../partials/header', { title: 'Flashcards: ' + topic.title }) %>
+<%- include('../partials/navbar') %>
+
+<div class="page-sm">
+  <div class="flex-between mb-3">
+    <div>
+      <div class="page-title">🃏 <%= topic.title %></div>
+      <div class="page-sub">Flip each card to reveal the answer. Use arrow keys or buttons to navigate.</div>
+    </div>
+    <a href="/student/topics/<%= topic.id %>" class="btn btn-outline btn-sm">← Back to Topic</a>
+  </div>
+
+  <% if (cards.length === 0) { %>
+    <div class="card" style="text-align:center;padding:3rem">
+      <div style="font-size:2.5rem;margin-bottom:1rem">📭</div>
+      <div style="font-size:1.1rem;font-weight:700;margin-bottom:.5rem;color:var(--text)">No Flashcards Available</div>
+      <p class="text-muted">This topic doesn't have any questions yet. Ask your instructor to add some!</p>
+      <a href="/student/dashboard" class="btn btn-primary mt-2">Back to Dashboard</a>
+    </div>
+  <% } else { %>
+
+  <!-- Controls -->
+  <div class="card mb-2" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.8rem;padding:1rem 1.5rem">
+    <div style="display:flex;align-items:center;gap:1rem">
+      <span id="card-counter" style="font-weight:700;font-size:1rem;color:var(--primary)">1 / <%= cards.length %></span>
+      <span id="card-type-badge" class="tag tag-blue" style="font-size:.72rem"></span>
+    </div>
+    <div style="display:flex;align-items:center;gap:.7rem">
+      <button onclick="shuffleCards()" class="btn btn-sm btn-outline" title="Shuffle cards">🔀 Shuffle</button>
+      <button onclick="resetCards()" class="btn btn-sm btn-outline" title="Reset to original order">↻ Reset</button>
+    </div>
+  </div>
+
+  <!-- Progress Bar -->
+  <div style="height:5px;background:var(--surface2);border-radius:99px;overflow:hidden;margin-bottom:1.5rem">
+    <div id="progress-bar" style="height:100%;width:<%= 100 / cards.length %>%;background:linear-gradient(90deg,#002F6C,#4a90d9);border-radius:99px;transition:width .4s ease"></div>
+  </div>
+
+  <!-- Flashcard Area -->
+  <div class="flashcard-stage" onclick="flipCard()" tabindex="0">
+    <div class="flashcard" id="flashcard">
+      <div class="flashcard-face flashcard-front">
+        <div class="flashcard-label">QUESTION</div>
+        <div class="flashcard-content" id="front-content"></div>
+        <div class="flashcard-hint">Click or press Space to flip</div>
+      </div>
+      <div class="flashcard-face flashcard-back">
+        <div class="flashcard-label">ANSWER</div>
+        <div class="flashcard-content" id="back-content"></div>
+        <div class="flashcard-hint">Click or press Space to flip back</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <div style="display:flex;align-items:center;justify-content:center;gap:1rem;margin-top:1.5rem">
+    <button onclick="prevCard()" class="btn btn-outline" id="btn-prev" style="min-width:120px">← Previous</button>
+    <button onclick="markKnown()" class="btn btn-sm" id="btn-known" style="background:#dcfce7;color:#15803d;border:1.5px solid #86efac;font-weight:700" title="Mark as known">✓ Got it</button>
+    <button onclick="nextCard()" class="btn btn-primary" id="btn-next" style="min-width:120px">Next →</button>
+  </div>
+
+  <!-- Stats -->
+  <div class="card mt-2" id="stats-bar" style="display:flex;align-items:center;justify-content:center;gap:2rem;padding:.8rem 1.5rem;font-size:.85rem">
+    <div><span style="color:var(--success);font-weight:700" id="stat-known">0</span> <span class="text-muted">known</span></div>
+    <div><span style="color:var(--primary);font-weight:700" id="stat-remaining"><%= cards.length %></span> <span class="text-muted">remaining</span></div>
+    <div><span style="color:var(--text-muted);font-weight:700" id="stat-total"><%= cards.length %></span> <span class="text-muted">total</span></div>
+  </div>
+
+  <!-- Completion -->
+  <div class="card mt-2" id="completion-card" style="display:none;text-align:center;padding:2.5rem">
+    <div style="font-size:3rem;margin-bottom:.8rem">🎉</div>
+    <div style="font-size:1.3rem;font-weight:700;color:var(--primary);margin-bottom:.5rem">All Cards Reviewed!</div>
+    <p class="text-muted mb-2">You've gone through all <span id="comp-total"></span> flashcards.</p>
+    <div style="display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap">
+      <button onclick="resetCards()" class="btn btn-primary">🔄 Study Again</button>
+      <a href="/student/topics/<%= topic.id %>/practice" class="btn btn-accent">📝 Practice Quiz</a>
+      <a href="/student/dashboard" class="btn btn-outline">← Dashboard</a>
+    </div>
+  </div>
+
+  <% } %>
+</div>
+
+<% if (cards.length > 0) { %>
+<style>
+  /* ── Flashcard Stage ── */
+  .flashcard-stage {
+    perspective: 1200px;
+    cursor: pointer;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .flashcard {
+    position: relative;
+    width: 100%;
+    min-height: 320px;
+    transform-style: preserve-3d;
+    transition: transform 0.6s cubic-bezier(.4,.2,.2,1);
+    border-radius: 16px;
+  }
+  .flashcard.flipped {
+    transform: rotateY(180deg);
+  }
+  .flashcard-face {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    border-radius: 16px;
+    padding: 2.5rem 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(0,47,108,.12);
+    border: 1.5px solid var(--border);
+  }
+  .flashcard-front {
+    background: linear-gradient(145deg, #ffffff 0%, #f0f4fb 100%);
+    z-index: 2;
+  }
+  .flashcard-back {
+    background: linear-gradient(145deg, #002F6C 0%, #1a4d99 100%);
+    color: #fff;
+    transform: rotateY(180deg);
+  }
+  .flashcard-label {
+    font-size: .7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    opacity: .5;
+    margin-bottom: 1.2rem;
+  }
+  .flashcard-content {
+    font-size: 1.15rem;
+    line-height: 1.7;
+    font-weight: 500;
+    max-width: 520px;
+    word-break: break-word;
+  }
+  .flashcard-front .flashcard-content {
+    color: var(--text);
+  }
+  .flashcard-back .flashcard-content {
+    color: #fff;
+  }
+  .flashcard-hint {
+    margin-top: 1.5rem;
+    font-size: .78rem;
+    opacity: .4;
+    font-weight: 600;
+  }
+  .flashcard-back .flashcard-label {
+    color: rgba(255,255,255,.5);
+  }
+
+  /* ── Known card animation ── */
+  @keyframes cardKnown {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.05); opacity: .7; }
+    100% { transform: scale(.95) translateY(-10px); opacity: 0; }
+  }
+  .flashcard.card-known {
+    animation: cardKnown .4s ease forwards;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 640px) {
+    .flashcard { min-height: 260px; }
+    .flashcard-face { padding: 1.8rem 1.2rem; }
+    .flashcard-content { font-size: 1rem; }
+  }
+</style>
+
+<script>
+  // Card data from server
+  const originalCards = <%- JSON.stringify(cards) %>;
+  let cards = [...originalCards];
+  let currentIndex = 0;
+  let isFlipped = false;
+  let knownCount = 0;
+  const totalCards = cards.length;
+
+  function renderCard() {
+    if (currentIndex >= cards.length) {
+      showCompletion();
+      return;
+    }
+    const card = cards[currentIndex];
+    const el = document.getElementById('flashcard');
+    el.classList.remove('flipped', 'card-known');
+
+    document.getElementById('front-content').innerHTML = escapeHtml(card.front);
+    document.getElementById('back-content').innerHTML = escapeHtml(card.back);
+    document.getElementById('card-counter').textContent = (currentIndex + 1) + ' / ' + cards.length;
+    document.getElementById('progress-bar').style.width = ((currentIndex + 1) / cards.length * 100) + '%';
+
+    // Type badge
+    const badge = document.getElementById('card-type-badge');
+    const typeLabels = { mcq: 'Multiple Choice', tf: 'True/False', open: 'Open-ended' };
+    badge.textContent = typeLabels[card.type] || card.type;
+    badge.className = 'tag ' + (card.type === 'mcq' ? 'tag-blue' : card.type === 'tf' ? 'tag-orange' : 'tag-green');
+
+    isFlipped = false;
+    document.getElementById('btn-prev').disabled = currentIndex === 0;
+
+    updateStats();
+  }
+
+  function flipCard() {
+    const el = document.getElementById('flashcard');
+    el.classList.toggle('flipped');
+    isFlipped = !isFlipped;
+  }
+
+  function nextCard() {
+    if (currentIndex < cards.length - 1) {
+      currentIndex++;
+      renderCard();
+    } else {
+      showCompletion();
+    }
+  }
+
+  function prevCard() {
+    if (currentIndex > 0) {
+      currentIndex--;
+      renderCard();
+    }
+  }
+
+  function markKnown() {
+    knownCount++;
+    const el = document.getElementById('flashcard');
+    el.classList.add('card-known');
+    setTimeout(() => {
+      cards.splice(currentIndex, 1);
+      if (currentIndex >= cards.length) currentIndex = Math.max(0, cards.length - 1);
+      if (cards.length === 0) {
+        showCompletion();
+      } else {
+        renderCard();
+      }
+    }, 400);
+  }
+
+  function shuffleCards() {
+    for (let i = cards.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [cards[i], cards[j]] = [cards[j], cards[i]];
+    }
+    currentIndex = 0;
+    renderCard();
+  }
+
+  function resetCards() {
+    cards = [...originalCards];
+    currentIndex = 0;
+    knownCount = 0;
+    document.getElementById('completion-card').style.display = 'none';
+    document.querySelector('.flashcard-stage').style.display = '';
+    document.getElementById('btn-prev').parentElement.style.display = '';
+    document.getElementById('stats-bar').style.display = '';
+    renderCard();
+  }
+
+  function showCompletion() {
+    document.querySelector('.flashcard-stage').style.display = 'none';
+    document.getElementById('btn-prev').parentElement.style.display = 'none';
+    document.getElementById('stats-bar').style.display = 'none';
+    document.getElementById('completion-card').style.display = '';
+    document.getElementById('comp-total').textContent = totalCards;
+  }
+
+  function updateStats() {
+    document.getElementById('stat-known').textContent = knownCount;
+    document.getElementById('stat-remaining').textContent = cards.length;
+    document.getElementById('stat-total').textContent = totalCards;
+  }
+
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  // Keyboard navigation
+  document.addEventListener('keydown', (e) => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    switch(e.key) {
+      case 'ArrowRight': nextCard(); e.preventDefault(); break;
+      case 'ArrowLeft': prevCard(); e.preventDefault(); break;
+      case ' ': flipCard(); e.preventDefault(); break;
+      case 'Enter': markKnown(); e.preventDefault(); break;
+    }
+  });
+
+  // Initialize
+  renderCard();
+</script>
+<% } %>
+
+<%- include('../partials/footer') %>

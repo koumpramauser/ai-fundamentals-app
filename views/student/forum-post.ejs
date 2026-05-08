@@ -1,0 +1,130 @@
+<%- include('../partials/header', { title: post.title }) %>
+<%- include('../partials/navbar') %>
+
+<%
+  const catIcons = { content_quality: '📝', missing_topic: '📚', question_issue: '❓', general: '💡' };
+  const catLabels = { content_quality: 'Content Quality', missing_topic: 'Missing Topic', question_issue: 'Question Issue', general: 'General Feedback' };
+  const statusColors = { open: '#15803d', in_progress: '#d97706', resolved: '#6b7280', declined: '#b91c1c' };
+  const statusBgs = { open: '#dcfce7', in_progress: '#fef3c7', resolved: '#f3f4f6', declined: '#fee2e2' };
+  const statusLabels = { open: 'Open', in_progress: 'In Progress', resolved: 'Resolved', declined: 'Declined' };
+  const formatDate = (d) => new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+%>
+
+<div class="page-sm">
+  <div class="flex-between mb-3">
+    <a href="/forum" class="btn btn-outline btn-sm">← Back to Forum</a>
+    <div style="display:flex;gap:.5rem;align-items:center">
+      <span class="tag" style="background:<%= statusBgs[post.status] %>;color:<%= statusColors[post.status] %>"><%= statusLabels[post.status] %></span>
+      <span class="tag tag-gray"><%= catIcons[post.category] || '💡' %> <%= catLabels[post.category] || post.category %></span>
+    </div>
+  </div>
+
+  <!-- Main Post -->
+  <div class="card mb-2">
+    <div style="display:flex;gap:1.2rem;align-items:flex-start">
+      <!-- Vote -->
+      <div style="display:flex;flex-direction:column;align-items:center;min-width:50px">
+        <form method="POST" action="/forum/<%= post.id %>/vote" style="margin:0">
+          <button type="submit" class="vote-btn <%= userVoted ? 'voted' : '' %>"
+            <%= !sessionUser ? 'disabled' : '' %>>
+            ▲
+          </button>
+        </form>
+        <span style="font-size:1.1rem;font-weight:800;color:var(--primary);margin-top:.2rem"><%= post.votes %></span>
+        <span style="font-size:.7rem;color:var(--text-muted)">votes</span>
+      </div>
+      <!-- Content -->
+      <div style="flex:1">
+        <h1 style="font-family:var(--font-head);font-size:1.35rem;font-weight:700;color:var(--primary);margin-bottom:.5rem"><%= post.title %></h1>
+        <div style="display:flex;align-items:center;gap:1rem;font-size:.82rem;color:var(--text-muted);margin-bottom:1rem;flex-wrap:wrap">
+          <span>by <strong><%= post.users ? post.users.name : 'Anonymous' %></strong></span>
+          <span><%= formatDate(post.created_at) %></span>
+          <% if (post.topics) { %>
+            <span>📌 Related to: <a href="/student/topics/<%= post.topics.id %>"><%= post.topics.title %></a></span>
+          <% } %>
+        </div>
+        <div style="font-size:.95rem;line-height:1.75;color:var(--text);white-space:pre-wrap"><%= post.body %></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Controls -->
+  <% if (sessionUser && sessionUser.role === 'admin') { %>
+  <div class="card mb-2" style="background:#f8f9fc;border:1.5px dashed var(--border);padding:1rem 1.5rem">
+    <div style="font-weight:700;font-size:.88rem;color:var(--primary);margin-bottom:.6rem">⚙ Admin Controls</div>
+    <form method="POST" action="/forum/<%= post.id %>/status" style="display:flex;align-items:center;gap:.8rem;flex-wrap:wrap">
+      <label for="admin-status" style="font-size:.85rem;margin-bottom:0">Update Status:</label>
+      <select id="admin-status" name="status" style="width:auto;padding:.35rem .7rem;font-size:.85rem">
+        <option value="open" <%= post.status === 'open' ? 'selected' : '' %>>🟢 Open</option>
+        <option value="in_progress" <%= post.status === 'in_progress' ? 'selected' : '' %>>🟡 In Progress</option>
+        <option value="resolved" <%= post.status === 'resolved' ? 'selected' : '' %>>✅ Resolved</option>
+        <option value="declined" <%= post.status === 'declined' ? 'selected' : '' %>>❌ Declined</option>
+      </select>
+      <button type="submit" class="btn btn-sm btn-primary">Update</button>
+    </form>
+  </div>
+  <% } %>
+
+  <!-- Replies Section -->
+  <div class="section-title" style="margin-top:1.5rem"><%= replies.length %> Repl<%= replies.length === 1 ? 'y' : 'ies' %></div>
+
+  <% if (replies.length === 0) { %>
+    <div class="card" style="text-align:center;padding:2rem">
+      <p class="text-muted">No replies yet. Be the first to respond!</p>
+    </div>
+  <% } else { %>
+    <% replies.forEach((reply, i) => { %>
+    <div class="card reply-card" style="<%= reply.users && reply.users.role === 'admin' ? 'border-left:3px solid var(--primary);background:#f8faff' : '' %>">
+      <div style="display:flex;align-items:center;gap:.8rem;margin-bottom:.6rem;font-size:.82rem;flex-wrap:wrap">
+        <strong style="color:var(--text)"><%= reply.users ? reply.users.name : 'Anonymous' %></strong>
+        <% if (reply.users && reply.users.role === 'admin') { %>
+          <span class="tag tag-blue" style="font-size:.65rem">INSTRUCTOR</span>
+        <% } %>
+        <span class="text-muted"><%= formatDate(reply.created_at) %></span>
+      </div>
+      <div style="font-size:.93rem;line-height:1.7;color:var(--text);white-space:pre-wrap"><%= reply.body %></div>
+    </div>
+    <% }) %>
+  <% } %>
+
+  <!-- Reply Form -->
+  <div class="card mt-2">
+    <div style="font-weight:700;font-size:.95rem;color:var(--text);margin-bottom:.8rem">💬 Add a Reply</div>
+    <% if (!sessionUser) { %>
+      <div class="alert alert-info" style="margin-bottom:0">Please <a href="/auth/login" style="font-weight:700">log in</a> to reply.</div>
+    <% } else { %>
+    <form method="POST" action="/forum/<%= post.id %>/reply">
+      <div class="form-group" style="margin-bottom:.8rem">
+        <textarea name="body" rows="3" placeholder="Share your thoughts or feedback..." required maxlength="2000" style="min-height:80px"></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary btn-sm">Post Reply</button>
+    </form>
+    <% } %>
+  </div>
+</div>
+
+<style>
+  .vote-btn {
+    background: none;
+    border: 1.5px solid var(--border);
+    border-radius: 6px;
+    width: 36px;
+    height: 30px;
+    cursor: pointer;
+    font-size: .9rem;
+    color: var(--text-muted);
+    transition: all .2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+  }
+  .vote-btn:hover:not(:disabled) { border-color: var(--primary); color: var(--primary); background: var(--primary-lt); }
+  .vote-btn.voted { border-color: var(--primary); color: var(--primary); background: var(--primary-lt); }
+  .vote-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+  .reply-card + .reply-card { margin-top: .6rem; }
+</style>
+
+<%- include('../partials/study-buddy.ejs') %>
+<%- include('../partials/footer') %>
