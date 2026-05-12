@@ -1,0 +1,356 @@
+<%- include('./partials/header.ejs', { title: 'AI-Powered Learning Platform for FAU' }) %>
+
+<!-- Custom Navbar for Landing -->
+<nav class="lp-nav">
+  <a href="/" class="lp-brand">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/75/FAU_Logo.svg/200px-FAU_Logo.svg.png"
+         alt="FAU" style="height:28px;filter:brightness(0) invert(1);opacity:.9" />
+    <span>Study<span style="color:#7ab3f0">AI</span></span>
+  </a>
+  <div class="lp-nav-links">
+    <a href="#features">Features</a>
+    <a href="/leaderboard">Leaderboard</a>
+    <a href="/forum">Forum</a>
+    <a href="/auth/login" class="lp-btn-ghost">Log in</a>
+    <a href="/student/dashboard" class="lp-btn-primary">Get Started →</a>
+  </div>
+</nav>
+
+<!-- ══ HERO ══ -->
+<section class="hero">
+  <div class="hero-bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+  <div class="hero-content">
+    <div class="hero-badge">✦ FAU Erlangen-Nürnberg · AI Fundamentals</div>
+    <h1 class="hero-title">Learn Smarter.<br><span class="hero-gradient">Study with AI.</span></h1>
+    <p class="hero-sub">An intelligent study platform designed for FAU students — featuring AI-graded practice, flashcards, real-time feedback, and a collaborative forum.</p>
+    <div class="hero-cta">
+      <a href="/student/dashboard" class="lp-btn-primary lp-btn-lg">Start Learning →</a>
+      <a href="/auth/register" class="lp-btn-outline lp-btn-lg">Create Free Account</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><span class="stat-n">12+</span><span class="stat-l">Topics</span></div>
+      <div class="stat-divider"></div>
+      <div class="stat"><span class="stat-n">100+</span><span class="stat-l">Questions</span></div>
+      <div class="stat-divider"></div>
+      <div class="stat"><span class="stat-n">AI</span><span class="stat-l">Grading</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FEATURES ══ -->
+<section class="features-section" id="features">
+  <div class="section-label">Why StudyAI?</div>
+  <h2 class="section-title">Everything you need to <span class="hero-gradient">master AI Fundamentals</span></h2>
+
+  <div class="features-grid">
+
+    <div class="feature-card fc-blue">
+      <div class="fc-icon">🎓</div>
+      <div class="fc-badge">University Credits</div>
+      <h3 class="fc-title">Self-Paced Learning</h3>
+      <p class="fc-desc">Empowering students to learn at their own speed, fostering independence and personalized progress.</p>
+      <a href="/student/dashboard" class="fc-link">Explore Topics →</a>
+    </div>
+
+    <div class="feature-card fc-indigo">
+      <div class="fc-icon">🧠</div>
+      <div class="fc-badge">University Credits</div>
+      <h3 class="fc-title">Adaptive Learning</h3>
+      <p class="fc-desc">Tailoring content and difficulty based on individual student performance, maximizing engagement and comprehension.</p>
+      <a href="/student/dashboard" class="fc-link">Start Practicing →</a>
+    </div>
+
+    <div class="feature-card fc-teal">
+      <div class="fc-icon">📊</div>
+      <div class="fc-badge">University Credits</div>
+      <h3 class="fc-title">See Student Progress</h3>
+      <p class="fc-desc">Providing real-time insights into student advancement, facilitating targeted support and encouragement.</p>
+      <a href="/leaderboard" class="fc-link">View Leaderboard →</a>
+    </div>
+
+    <div class="feature-card fc-violet">
+      <div class="fc-icon">⚡</div>
+      <div class="fc-badge">University Credits</div>
+      <h3 class="fc-title">Live Quizzes</h3>
+      <p class="fc-desc">Offering interactive assessments in real-time, promoting active participation and immediate feedback for enhanced learning outcomes.</p>
+      <a href="/student/dashboard" class="fc-link">Take a Quiz →</a>
+    </div>
+
+    <div class="feature-card fc-amber">
+      <div class="fc-icon">🃏</div>
+      <div class="fc-badge">Study Tool</div>
+      <h3 class="fc-title">AI Flashcards</h3>
+      <p class="fc-desc">Flip-card study sessions generated from course questions. Shuffle, mark as known, and track your progress card by card.</p>
+      <a href="/student/dashboard" class="fc-link">Study Cards →</a>
+    </div>
+
+    <div class="feature-card fc-rose">
+      <div class="fc-icon">💬</div>
+      <div class="fc-badge">Community</div>
+      <h3 class="fc-title">Student Forum</h3>
+      <p class="fc-desc">Suggest content improvements, vote on ideas, and discuss with peers. Your feedback shapes the course materials.</p>
+      <a href="/forum" class="fc-link">Join Forum →</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══ HOW IT WORKS ══ -->
+<section class="how-section">
+  <div class="how-inner">
+    <div class="section-label">Simple Process</div>
+    <h2 class="section-title" style="color:#fff">How it <span style="color:#7ab3f0">works</span></h2>
+    <div class="steps-grid">
+      <div class="step">
+        <div class="step-num">01</div>
+        <h4>Pick a Topic</h4>
+        <p>Browse 12+ AI Fundamentals topics, each with curated summaries and podcasts.</p>
+      </div>
+      <div class="step-arrow">→</div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <h4>Study & Practice</h4>
+        <p>Read summaries, flip flashcards, and answer AI-graded questions to test your knowledge.</p>
+      </div>
+      <div class="step-arrow">→</div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <h4>Earn Points</h4>
+        <p>Get instant AI feedback and climb the leaderboard with every correct answer.</p>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:2.5rem">
+      <a href="/student/dashboard" class="lp-btn-primary lp-btn-lg">Start Now — It's Free</a>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FOOTER ══ -->
+<footer class="lp-footer">
+  <div class="lp-footer-brand">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/75/FAU_Logo.svg/200px-FAU_Logo.svg.png"
+         alt="FAU" style="height:24px;filter:brightness(0) invert(1);opacity:.6" />
+    <span style="color:rgba(255,255,255,.5);font-size:.85rem">StudyAI · AI Fundamentals · FAU Erlangen-Nürnberg</span>
+  </div>
+  <div style="display:flex;gap:1.5rem;flex-wrap:wrap">
+    <a href="/student/dashboard" class="lp-footer-link">Dashboard</a>
+    <a href="/leaderboard" class="lp-footer-link">Leaderboard</a>
+    <a href="/forum" class="lp-footer-link">Forum</a>
+    <a href="/auth/login" class="lp-footer-link">Login</a>
+  </div>
+</footer>
+
+<style>
+/* ══ RESET for landing ══ */
+body { background: #06080f; margin: 0; }
+
+/* ══ NAV ══ */
+.lp-nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 2.5rem; height: 64px;
+  background: rgba(6,8,15,.85);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255,255,255,.07);
+}
+.lp-brand {
+  display: flex; align-items: center; gap: .7rem;
+  font-family: var(--font-head); font-size: 1.1rem; font-weight: 700;
+  color: #fff; text-decoration: none;
+}
+.lp-nav-links { display: flex; align-items: center; gap: 1.6rem; }
+.lp-nav-links a { color: rgba(255,255,255,.7); font-size: .9rem; font-weight: 500; text-decoration: none; transition: color .2s; }
+.lp-nav-links a:hover { color: #fff; }
+
+.lp-btn-primary {
+  display: inline-flex; align-items: center; gap: .4rem;
+  background: linear-gradient(135deg, #2563eb, #4a90d9);
+  color: #fff !important; padding: .5rem 1.3rem; border-radius: 8px;
+  font-weight: 700; font-size: .88rem; text-decoration: none !important;
+  transition: opacity .2s, transform .15s; border: none;
+}
+.lp-btn-primary:hover { opacity: .88; transform: translateY(-1px); }
+.lp-btn-lg { padding: .75rem 2rem; font-size: 1rem; border-radius: 10px; }
+
+.lp-btn-ghost {
+  color: rgba(255,255,255,.75) !important; font-size: .88rem; font-weight: 600;
+  text-decoration: none !important; transition: color .2s;
+}
+.lp-btn-ghost:hover { color: #fff !important; }
+
+.lp-btn-outline {
+  display: inline-flex; align-items: center;
+  color: rgba(255,255,255,.85) !important;
+  border: 1.5px solid rgba(255,255,255,.25); border-radius: 10px;
+  padding: .75rem 2rem; font-size: 1rem; font-weight: 600;
+  text-decoration: none !important; transition: all .2s;
+}
+.lp-btn-outline:hover { border-color: rgba(255,255,255,.6); color: #fff !important; background: rgba(255,255,255,.05); }
+
+/* ══ HERO ══ */
+.hero {
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden; padding: 6rem 2rem 4rem;
+}
+.hero-bg-orbs { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+.orb {
+  position: absolute; border-radius: 50%;
+  filter: blur(80px); opacity: .35;
+}
+.orb-1 { width: 500px; height: 500px; background: #1e40af; top: -100px; left: -100px; }
+.orb-2 { width: 400px; height: 400px; background: #4338ca; bottom: -50px; right: -50px; }
+.orb-3 { width: 300px; height: 300px; background: #0ea5e9; top: 40%; left: 40%; transform: translate(-50%,-50%); }
+
+.hero-content {
+  position: relative; z-index: 1;
+  max-width: 760px; text-align: center;
+}
+.hero-badge {
+  display: inline-block;
+  background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.18);
+  color: rgba(255,255,255,.8); font-size: .8rem; font-weight: 600;
+  padding: .35rem 1rem; border-radius: 99px; margin-bottom: 1.5rem;
+  letter-spacing: .5px;
+}
+.hero-title {
+  font-family: var(--font-head); font-size: clamp(2.4rem, 6vw, 4rem);
+  font-weight: 700; color: #fff; line-height: 1.15; margin-bottom: 1.2rem;
+}
+.hero-gradient {
+  background: linear-gradient(135deg, #60a5fa, #a78bfa, #34d399);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero-sub {
+  color: rgba(255,255,255,.65); font-size: 1.1rem; line-height: 1.75;
+  max-width: 600px; margin: 0 auto 2rem;
+}
+.hero-cta { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-bottom: 2.5rem; }
+.hero-stats {
+  display: inline-flex; align-items: center; gap: 1.5rem;
+  background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12);
+  border-radius: 14px; padding: .8rem 2rem;
+}
+.stat { display: flex; flex-direction: column; align-items: center; gap: .1rem; }
+.stat-n { font-size: 1.4rem; font-weight: 800; color: #fff; }
+.stat-l { font-size: .72rem; color: rgba(255,255,255,.5); font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
+.stat-divider { width: 1px; height: 36px; background: rgba(255,255,255,.15); }
+
+/* ══ FEATURES ══ */
+.features-section {
+  max-width: 1200px; margin: 0 auto; padding: 5rem 2rem;
+  text-align: center;
+}
+.section-label {
+  font-size: .75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px;
+  color: #60a5fa; margin-bottom: .75rem;
+}
+.section-title {
+  font-family: var(--font-head); font-size: clamp(1.6rem, 3vw, 2.4rem);
+  color: #fff; font-weight: 700; margin-bottom: 3rem; line-height: 1.3;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.4rem;
+  text-align: left;
+}
+.feature-card {
+  border-radius: 20px; padding: 2rem;
+  border: 1px solid rgba(255,255,255,.08);
+  transition: transform .25s, box-shadow .25s;
+  position: relative; overflow: hidden;
+}
+.feature-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  border-radius: 20px 20px 0 0;
+}
+.feature-card:hover { transform: translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,.4); }
+
+.fc-blue   { background: linear-gradient(145deg, rgba(37,99,235,.15), rgba(37,99,235,.05)); }
+.fc-blue::before   { background: linear-gradient(90deg, #2563eb, #60a5fa); }
+.fc-indigo { background: linear-gradient(145deg, rgba(79,70,229,.15), rgba(79,70,229,.05)); }
+.fc-indigo::before { background: linear-gradient(90deg, #4f46e5, #a78bfa); }
+.fc-teal   { background: linear-gradient(145deg, rgba(20,184,166,.15), rgba(20,184,166,.05)); }
+.fc-teal::before   { background: linear-gradient(90deg, #0d9488, #34d399); }
+.fc-violet { background: linear-gradient(145deg, rgba(139,92,246,.15), rgba(139,92,246,.05)); }
+.fc-violet::before { background: linear-gradient(90deg, #7c3aed, #c4b5fd); }
+.fc-amber  { background: linear-gradient(145deg, rgba(245,158,11,.15), rgba(245,158,11,.05)); }
+.fc-amber::before  { background: linear-gradient(90deg, #d97706, #fcd34d); }
+.fc-rose   { background: linear-gradient(145deg, rgba(244,63,94,.15), rgba(244,63,94,.05)); }
+.fc-rose::before   { background: linear-gradient(90deg, #e11d48, #fb7185); }
+
+.fc-icon { font-size: 2rem; margin-bottom: .75rem; }
+.fc-badge {
+  display: inline-block; font-size: .68rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1px;
+  color: rgba(255,255,255,.5); border: 1px solid rgba(255,255,255,.15);
+  border-radius: 99px; padding: .2rem .7rem; margin-bottom: .8rem;
+}
+.fc-title {
+  font-family: var(--font-head); font-size: 1.15rem; font-weight: 700;
+  color: #fff; margin-bottom: .6rem;
+}
+.fc-desc {
+  color: rgba(255,255,255,.6); font-size: .9rem; line-height: 1.7; margin-bottom: 1.2rem;
+}
+.fc-link {
+  color: rgba(255,255,255,.75); font-size: .85rem; font-weight: 700;
+  text-decoration: none; transition: color .2s;
+}
+.fc-link:hover { color: #fff; }
+
+/* ══ HOW IT WORKS ══ */
+.how-section {
+  background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+  padding: 5rem 2rem;
+}
+.how-inner { max-width: 900px; margin: 0 auto; text-align: center; }
+.steps-grid {
+  display: flex; align-items: flex-start; justify-content: center;
+  gap: 1rem; flex-wrap: wrap; margin-top: 2.5rem;
+}
+.step {
+  flex: 1; min-width: 200px; max-width: 240px;
+  text-align: center; padding: 1.5rem;
+}
+.step-num {
+  font-size: 2.5rem; font-weight: 900;
+  background: linear-gradient(135deg, #60a5fa, #a78bfa);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; margin-bottom: .5rem;
+}
+.step h4 { color: #fff; font-size: 1rem; font-weight: 700; margin-bottom: .4rem; }
+.step p { color: rgba(255,255,255,.55); font-size: .87rem; line-height: 1.65; }
+.step-arrow {
+  font-size: 1.5rem; color: rgba(255,255,255,.25);
+  padding-top: 2.5rem; flex-shrink: 0;
+}
+
+/* ══ FOOTER ══ */
+.lp-footer {
+  background: #06080f; border-top: 1px solid rgba(255,255,255,.07);
+  padding: 1.5rem 2.5rem;
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+}
+.lp-footer-brand { display: flex; align-items: center; gap: .75rem; }
+.lp-footer-link { color: rgba(255,255,255,.4); font-size: .82rem; text-decoration: none; transition: color .2s; }
+.lp-footer-link:hover { color: rgba(255,255,255,.8); }
+
+/* ══ RESPONSIVE ══ */
+@media (max-width: 640px) {
+  .lp-nav { padding: 0 1.2rem; }
+  .lp-nav-links a:not(.lp-btn-primary):not(.lp-btn-ghost) { display: none; }
+  .step-arrow { display: none; }
+  .hero-stats { gap: 1rem; padding: .7rem 1.2rem; }
+}
+</style>
+
+</body>
+</html>

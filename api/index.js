@@ -58,7 +58,10 @@ function requireAdmin(req, res, next) {
 }
 
 // ── Redirects ──
-app.get('/', (req, res) => res.redirect('/student/dashboard'));
+app.get('/', (req, res) => {
+    if (req.user) return res.redirect('/student/dashboard');
+    res.render('landing', { title: 'StudyAI — AI-Powered Learning for FAU' });
+});
 app.get('/login', (req, res) => res.redirect('/auth/login'));
 app.get('/register', (req, res) => res.redirect('/auth/register'));
 app.get('/logout', (req, res) => res.redirect('/auth/logout'));
