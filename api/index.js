@@ -638,3 +638,9 @@ app.use((req, res) => res.status(404).render('error', {
 }));
 
 module.exports = app;
+
+// Local dev server (ignored by Vercel which uses module.exports)
+if (require.main === module) {
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => console.log(`StudyAI running at http://localhost:${PORT}`));
+}
