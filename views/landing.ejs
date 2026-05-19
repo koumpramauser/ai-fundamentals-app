@@ -1,16 +1,14 @@
-<%- include('./partials/header.ejs', { title: 'AI-Powered Learning Platform for FAU' }) %>
+<%- include('./partials/header.ejs', { title: 'AI Fundamentals 1 — StudyAI · FAU' }) %>
 
-<!-- Custom Navbar for Landing -->
+<!-- ══ LANDING NAV ══ -->
 <nav class="lp-nav">
   <a href="/" class="lp-brand">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/75/FAU_Logo.svg/200px-FAU_Logo.svg.png"
-         alt="FAU" style="height:28px;filter:brightness(0) invert(1);opacity:.9" />
-    <span>Study<span style="color:#7ab3f0">AI</span></span>
+    <span class="brand-dot"></span>
+    Study<span class="brand-ai">AI</span>
   </a>
   <div class="lp-nav-links">
     <a href="#features">Features</a>
     <a href="/leaderboard">Leaderboard</a>
-    <a href="/forum">Forum</a>
     <a href="/auth/login" class="lp-btn-ghost">Log in</a>
     <a href="/student/dashboard" class="lp-btn-primary">Get Started →</a>
   </div>
@@ -18,82 +16,86 @@
 
 <!-- ══ HERO ══ -->
 <section class="hero">
-  <div class="hero-bg-orbs">
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
-    <div class="orb orb-3"></div>
-  </div>
   <div class="hero-content">
-    <div class="hero-badge">✦ FAU Erlangen-Nürnberg · AI Fundamentals</div>
-    <h1 class="hero-title">Learn Smarter.<br><span class="hero-gradient">Study with AI.</span></h1>
-    <p class="hero-sub">An intelligent study platform designed for FAU students — featuring AI-graded practice, flashcards, real-time feedback, and a collaborative forum.</p>
+    <div class="course-chip">📚 AI Fundamentals 1 · FAU Erlangen-Nürnberg</div>
+    <h1 class="hero-title">Your AI Study<br><span class="hero-accent">Companion</span> for<br>FAU Students 🎓</h1>
+    <p class="hero-sub">Practice questions, flashcards, instant AI feedback and a study forum — everything you need to pass <strong>AI Fundamentals 1</strong>.</p>
     <div class="hero-cta">
-      <a href="/student/dashboard" class="lp-btn-primary lp-btn-lg">Start Learning →</a>
-      <a href="/auth/register" class="lp-btn-outline lp-btn-lg">Create Free Account</a>
+      <a href="/student/dashboard" class="lp-btn-primary lp-btn-lg">Start Studying →</a>
+      <a href="/auth/register" class="lp-btn-outline lp-btn-lg">Create Account — it's free</a>
     </div>
     <div class="hero-stats">
-      <div class="stat"><span class="stat-n">12+</span><span class="stat-l">Topics</span></div>
-      <div class="stat-divider"></div>
-      <div class="stat"><span class="stat-n">100+</span><span class="stat-l">Questions</span></div>
-      <div class="stat-divider"></div>
-      <div class="stat"><span class="stat-n">AI</span><span class="stat-l">Grading</span></div>
+      <div class="stat">
+        <span class="stat-n">12+</span>
+        <span class="stat-l">Topics</span>
+      </div>
+      <div class="stat-sep"></div>
+      <div class="stat">
+        <span class="stat-n">100+</span>
+        <span class="stat-l">Questions</span>
+      </div>
+      <div class="stat-sep"></div>
+      <div class="stat">
+        <span class="stat-n">AI</span>
+        <span class="stat-l">Graded</span>
+      </div>
+      <div class="stat-sep"></div>
+      <div class="stat">
+        <span class="stat-n">Free</span>
+        <span class="stat-l">For Students</span>
+      </div>
     </div>
+  </div>
+
+  <!-- Decorative blobs -->
+  <div class="hero-blobs" aria-hidden="true">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
   </div>
 </section>
 
 <!-- ══ FEATURES ══ -->
 <section class="features-section" id="features">
-  <div class="section-label">Why StudyAI?</div>
-  <h2 class="section-title">Everything you need to <span class="hero-gradient">master AI Fundamentals</span></h2>
+  <div class="section-label">What's inside</div>
+  <h2 class="section-title">Everything you need to<br><span class="hero-accent">ace the course</span></h2>
 
   <div class="features-grid">
 
-    <div class="feature-card fc-blue">
-      <div class="fc-icon">🎓</div>
-      <div class="fc-badge">University Credits</div>
+    <div class="feature-card fc-lavender">
+      <div class="fc-emoji">🎓</div>
       <h3 class="fc-title">Self-Paced Learning</h3>
-      <p class="fc-desc">Empowering students to learn at their own speed, fostering independence and personalized progress.</p>
-      <a href="/student/dashboard" class="fc-link">Explore Topics →</a>
+      <p class="fc-desc">Study at your own speed. Browse 12+ AI Fundamentals topics with summaries, flashcards and podcasts — no deadlines inside the app.</p>
     </div>
 
-    <div class="feature-card fc-indigo">
-      <div class="fc-icon">🧠</div>
-      <div class="fc-badge">University Credits</div>
-      <h3 class="fc-title">Adaptive Learning</h3>
-      <p class="fc-desc">Tailoring content and difficulty based on individual student performance, maximizing engagement and comprehension.</p>
-      <a href="/student/dashboard" class="fc-link">Start Practicing →</a>
+    <div class="feature-card fc-mint">
+      <div class="fc-emoji">🧠</div>
+      <h3 class="fc-title">Adaptive Practice</h3>
+      <p class="fc-desc">AI-graded questions that adapt to your level. Get instant, personalised feedback on every answer — like having a tutor 24/7.</p>
     </div>
 
-    <div class="feature-card fc-teal">
-      <div class="fc-icon">📊</div>
-      <div class="fc-badge">University Credits</div>
-      <h3 class="fc-title">See Student Progress</h3>
-      <p class="fc-desc">Providing real-time insights into student advancement, facilitating targeted support and encouragement.</p>
-      <a href="/leaderboard" class="fc-link">View Leaderboard →</a>
-    </div>
-
-    <div class="feature-card fc-violet">
-      <div class="fc-icon">⚡</div>
-      <div class="fc-badge">University Credits</div>
+    <div class="feature-card fc-peach">
+      <div class="fc-emoji">⚡</div>
       <h3 class="fc-title">Live Quizzes</h3>
-      <p class="fc-desc">Offering interactive assessments in real-time, promoting active participation and immediate feedback for enhanced learning outcomes.</p>
-      <a href="/student/dashboard" class="fc-link">Take a Quiz →</a>
+      <p class="fc-desc">Test yourself with timed quizzes. Earn points, climb the leaderboard, and see exactly where you stand among your peers.</p>
     </div>
 
-    <div class="feature-card fc-amber">
-      <div class="fc-icon">🃏</div>
-      <div class="fc-badge">Study Tool</div>
+    <div class="feature-card fc-sky">
+      <div class="fc-emoji">🃏</div>
       <h3 class="fc-title">AI Flashcards</h3>
-      <p class="fc-desc">Flip-card study sessions generated from course questions. Shuffle, mark as known, and track your progress card by card.</p>
-      <a href="/student/dashboard" class="fc-link">Study Cards →</a>
+      <p class="fc-desc">Flip-card sessions generated from course material. Mark cards as "known" to focus on what you still need to practice.</p>
     </div>
 
     <div class="feature-card fc-rose">
-      <div class="fc-icon">💬</div>
-      <div class="fc-badge">Community</div>
+      <div class="fc-emoji">📊</div>
+      <h3 class="fc-title">Track Your Progress</h3>
+      <p class="fc-desc">See your score, topic-by-topic progress, and leaderboard ranking in real time. Stay motivated all semester.</p>
+    </div>
+
+    <div class="feature-card fc-yellow">
+      <div class="fc-emoji">💬</div>
       <h3 class="fc-title">Student Forum</h3>
-      <p class="fc-desc">Suggest content improvements, vote on ideas, and discuss with peers. Your feedback shapes the course materials.</p>
-      <a href="/forum" class="fc-link">Join Forum →</a>
+      <p class="fc-desc">Ask questions, share tips, and vote on improvements. Your feedback directly shapes the course content.</p>
     </div>
 
   </div>
@@ -101,27 +103,25 @@
 
 <!-- ══ HOW IT WORKS ══ -->
 <section class="how-section">
-  <div class="how-inner">
-    <div class="section-label">Simple Process</div>
-    <h2 class="section-title" style="color:#fff">How it <span style="color:#7ab3f0">works</span></h2>
-    <div class="steps-grid">
-      <div class="step">
-        <div class="step-num">01</div>
-        <h4>Pick a Topic</h4>
-        <p>Browse 12+ AI Fundamentals topics, each with curated summaries and podcasts.</p>
-      </div>
-      <div class="step-arrow">→</div>
-      <div class="step">
-        <div class="step-num">02</div>
-        <h4>Study & Practice</h4>
-        <p>Read summaries, flip flashcards, and answer AI-graded questions to test your knowledge.</p>
-      </div>
-      <div class="step-arrow">→</div>
-      <div class="step">
-        <div class="step-num">03</div>
-        <h4>Earn Points</h4>
-        <p>Get instant AI feedback and climb the leaderboard with every correct answer.</p>
-      </div>
+  <div class="section-label">Simple process</div>
+  <h2 class="section-title">Three steps to a better grade</h2>
+  <div class="steps-row">
+    <div class="step-card">
+      <div class="step-num">01</div>
+      <h4>Pick a Topic</h4>
+      <p>Browse 12+ topics from neural networks to search algorithms — each with a summary and podcast.</p>
+    </div>
+    <div class="step-arrow">→</div>
+    <div class="step-card">
+      <div class="step-num">02</div>
+      <h4>Study & Practice</h4>
+      <p>Flip flashcards, answer questions, and get instant AI feedback to lock in the concepts.</p>
+    </div>
+    <div class="step-arrow">→</div>
+    <div class="step-card">
+      <div class="step-num">03</div>
+      <h4>Earn Points</h4>
+      <p>Every correct answer adds to your score. Climb the leaderboard and stay motivated.</p>
     </div>
   </div>
 </section>
@@ -129,225 +129,233 @@
 <!-- ══ FOOTER ══ -->
 <footer class="lp-footer">
   <div class="lp-footer-brand">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/75/FAU_Logo.svg/200px-FAU_Logo.svg.png"
-         alt="FAU" style="height:24px;filter:brightness(0) invert(1);opacity:.6" />
-    <span style="color:rgba(255,255,255,.5);font-size:.85rem">StudyAI · AI Fundamentals · FAU Erlangen-Nürnberg</span>
+    <span style="font-weight:700;color:#5b6af0">StudyAI</span>
+    <span class="footer-sep">·</span>
+    <span>AI Fundamentals 1 · FAU Erlangen-Nürnberg</span>
   </div>
-  <div style="display:flex;gap:1.5rem;flex-wrap:wrap">
-    <a href="/student/dashboard" class="lp-footer-link">Dashboard</a>
-    <a href="/leaderboard" class="lp-footer-link">Leaderboard</a>
-    <a href="/forum" class="lp-footer-link">Forum</a>
-    <a href="/auth/login" class="lp-footer-link">Login</a>
+  <div class="footer-links">
+    <a href="/student/dashboard">Dashboard</a>
+    <a href="/leaderboard">Leaderboard</a>
+    <a href="/forum">Forum</a>
+    <a href="/auth/login">Login</a>
   </div>
 </footer>
 
 <style>
-/* ══ RESET for landing ══ */
-body { background: #06080f; margin: 0; }
+/* ══ BASE ══ */
+*, *::before, *::after { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: #f7f8fc;
+  color: #2d3250;
+  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+}
 
 /* ══ NAV ══ */
 .lp-nav {
   position: fixed; top: 0; left: 0; right: 0; z-index: 200;
   display: flex; align-items: center; justify-content: space-between;
-  padding: 0 2.5rem; height: 64px;
-  background: rgba(6,8,15,.85);
-  backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(255,255,255,.07);
+  padding: 0 2.5rem; height: 62px;
+  background: rgba(247,248,252,.9);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(91,106,240,.12);
 }
 .lp-brand {
-  display: flex; align-items: center; gap: .7rem;
-  font-family: var(--font-head); font-size: 1.1rem; font-weight: 700;
-  color: #fff; text-decoration: none;
+  display: flex; align-items: center; gap: .5rem;
+  font-size: 1.1rem; font-weight: 800; color: #2d3250;
+  text-decoration: none; letter-spacing: -.3px;
 }
-.lp-nav-links { display: flex; align-items: center; gap: 1.6rem; }
-.lp-nav-links a { color: rgba(255,255,255,.7); font-size: .9rem; font-weight: 500; text-decoration: none; transition: color .2s; }
-.lp-nav-links a:hover { color: #fff; }
+.brand-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: linear-gradient(135deg, #7b8ff7, #a78bfa);
+  flex-shrink: 0;
+}
+.brand-ai { color: #5b6af0; }
+.lp-nav-links { display: flex; align-items: center; gap: 1.5rem; }
+.lp-nav-links a {
+  color: #4a5180; font-size: .9rem; font-weight: 500;
+  text-decoration: none; transition: color .2s;
+}
+.lp-nav-links a:hover { color: #5b6af0; }
 
+/* Buttons */
 .lp-btn-primary {
-  display: inline-flex; align-items: center; gap: .4rem;
-  background: linear-gradient(135deg, #2563eb, #4a90d9);
-  color: #fff !important; padding: .5rem 1.3rem; border-radius: 8px;
+  display: inline-flex; align-items: center; gap: .35rem;
+  background: linear-gradient(135deg, #5b6af0, #7b8ff7);
+  color: #fff !important; padding: .5rem 1.3rem; border-radius: 10px;
   font-weight: 700; font-size: .88rem; text-decoration: none !important;
-  transition: opacity .2s, transform .15s; border: none;
+  box-shadow: 0 4px 14px rgba(91,106,240,.28);
+  transition: box-shadow .2s, transform .15s;
 }
-.lp-btn-primary:hover { opacity: .88; transform: translateY(-1px); }
-.lp-btn-lg { padding: .75rem 2rem; font-size: 1rem; border-radius: 10px; }
+.lp-btn-primary:hover { box-shadow: 0 6px 20px rgba(91,106,240,.38); transform: translateY(-1px); }
+.lp-btn-lg { padding: .72rem 2rem; font-size: .98rem; border-radius: 12px; }
 
 .lp-btn-ghost {
-  color: rgba(255,255,255,.75) !important; font-size: .88rem; font-weight: 600;
+  color: #4a5180 !important; font-size: .88rem; font-weight: 600;
   text-decoration: none !important; transition: color .2s;
 }
-.lp-btn-ghost:hover { color: #fff !important; }
+.lp-btn-ghost:hover { color: #5b6af0 !important; }
 
 .lp-btn-outline {
   display: inline-flex; align-items: center;
-  color: rgba(255,255,255,.85) !important;
-  border: 1.5px solid rgba(255,255,255,.25); border-radius: 10px;
-  padding: .75rem 2rem; font-size: 1rem; font-weight: 600;
-  text-decoration: none !important; transition: all .2s;
+  color: #5b6af0 !important;
+  border: 2px solid rgba(91,106,240,.35); border-radius: 12px;
+  padding: .72rem 2rem; font-size: .98rem; font-weight: 600;
+  text-decoration: none !important; transition: all .2s; background: #fff;
 }
-.lp-btn-outline:hover { border-color: rgba(255,255,255,.6); color: #fff !important; background: rgba(255,255,255,.05); }
+.lp-btn-outline:hover { border-color: #5b6af0; background: rgba(91,106,240,.05); }
 
 /* ══ HERO ══ */
 .hero {
-  min-height: 100vh; display: flex; align-items: center; justify-content: center;
-  position: relative; overflow: hidden; padding: 6rem 2rem 4rem;
+  position: relative; min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  padding: 8rem 2rem 5rem; overflow: hidden;
 }
-.hero-bg-orbs { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
-.orb {
-  position: absolute; border-radius: 50%;
-  filter: blur(80px); opacity: .35;
-}
-.orb-1 { width: 500px; height: 500px; background: #1e40af; top: -100px; left: -100px; }
-.orb-2 { width: 400px; height: 400px; background: #4338ca; bottom: -50px; right: -50px; }
-.orb-3 { width: 300px; height: 300px; background: #0ea5e9; top: 40%; left: 40%; transform: translate(-50%,-50%); }
-
 .hero-content {
   position: relative; z-index: 1;
-  max-width: 760px; text-align: center;
+  max-width: 680px; text-align: center;
 }
-.hero-badge {
+.course-chip {
   display: inline-block;
-  background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.18);
-  color: rgba(255,255,255,.8); font-size: .8rem; font-weight: 600;
-  padding: .35rem 1rem; border-radius: 99px; margin-bottom: 1.5rem;
-  letter-spacing: .5px;
+  background: #ede9fe; color: #6d4fc2;
+  font-size: .78rem; font-weight: 700; letter-spacing: .4px;
+  padding: .35rem 1.1rem; border-radius: 99px;
+  margin-bottom: 1.6rem; border: 1.5px solid rgba(109,79,194,.18);
 }
 .hero-title {
-  font-family: var(--font-head); font-size: clamp(2.4rem, 6vw, 4rem);
-  font-weight: 700; color: #fff; line-height: 1.15; margin-bottom: 1.2rem;
+  font-size: clamp(2.2rem, 5.5vw, 3.5rem);
+  font-weight: 800; line-height: 1.2; color: #1e2356;
+  margin-bottom: 1.2rem; letter-spacing: -.5px;
 }
-.hero-gradient {
-  background: linear-gradient(135deg, #60a5fa, #a78bfa, #34d399);
+.hero-accent {
+  background: linear-gradient(135deg, #5b6af0, #a78bfa);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 .hero-sub {
-  color: rgba(255,255,255,.65); font-size: 1.1rem; line-height: 1.75;
-  max-width: 600px; margin: 0 auto 2rem;
+  color: #5d6494; font-size: 1.07rem; line-height: 1.75;
+  max-width: 540px; margin: 0 auto 2.2rem;
 }
 .hero-cta { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-bottom: 2.5rem; }
+
 .hero-stats {
-  display: inline-flex; align-items: center; gap: 1.5rem;
-  background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12);
-  border-radius: 14px; padding: .8rem 2rem;
+  display: inline-flex; align-items: center; gap: 1.2rem;
+  background: #fff; border: 1.5px solid rgba(91,106,240,.15);
+  border-radius: 16px; padding: .8rem 2rem;
+  box-shadow: 0 4px 24px rgba(91,106,240,.08);
 }
 .stat { display: flex; flex-direction: column; align-items: center; gap: .1rem; }
-.stat-n { font-size: 1.4rem; font-weight: 800; color: #fff; }
-.stat-l { font-size: .72rem; color: rgba(255,255,255,.5); font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
-.stat-divider { width: 1px; height: 36px; background: rgba(255,255,255,.15); }
+.stat-n { font-size: 1.35rem; font-weight: 800; color: #2d3250; }
+.stat-l { font-size: .68rem; color: #8891b8; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
+.stat-sep { width: 1px; height: 34px; background: rgba(91,106,240,.15); }
+
+/* Blobs */
+.hero-blobs { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+.blob {
+  position: absolute; border-radius: 50%;
+  filter: blur(70px); opacity: .55;
+}
+.blob-1 { width: 480px; height: 480px; background: #ddd8f8; top: -80px; left: -100px; }
+.blob-2 { width: 380px; height: 380px; background: #fce4f0; bottom: 20px; right: -60px; }
+.blob-3 { width: 300px; height: 300px; background: #d1f3ef; top: 50%; left: 60%; transform: translate(-50%,-50%); }
 
 /* ══ FEATURES ══ */
 .features-section {
-  max-width: 1200px; margin: 0 auto; padding: 5rem 2rem;
-  text-align: center;
+  max-width: 1160px; margin: 0 auto;
+  padding: 5rem 2rem; text-align: center;
 }
 .section-label {
-  font-size: .75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px;
-  color: #60a5fa; margin-bottom: .75rem;
+  font-size: .72rem; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 2px; color: #7b8ff7; margin-bottom: .6rem;
 }
 .section-title {
-  font-family: var(--font-head); font-size: clamp(1.6rem, 3vw, 2.4rem);
-  color: #fff; font-weight: 700; margin-bottom: 3rem; line-height: 1.3;
+  font-size: clamp(1.7rem, 3vw, 2.3rem); font-weight: 800;
+  color: #1e2356; margin-bottom: 3rem; line-height: 1.3;
 }
 
 .features-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 1.4rem;
-  text-align: left;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.3rem; text-align: left;
 }
 .feature-card {
-  border-radius: 20px; padding: 2rem;
-  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 20px; padding: 1.8rem 1.6rem;
+  border: 1.5px solid transparent;
   transition: transform .25s, box-shadow .25s;
-  position: relative; overflow: hidden;
 }
-.feature-card::before {
-  content: '';
-  position: absolute; top: 0; left: 0; right: 0; height: 3px;
-  border-radius: 20px 20px 0 0;
-}
-.feature-card:hover { transform: translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,.4); }
+.feature-card:hover { transform: translateY(-4px); box-shadow: 0 12px 36px rgba(91,106,240,.12); }
 
-.fc-blue   { background: linear-gradient(145deg, rgba(37,99,235,.15), rgba(37,99,235,.05)); }
-.fc-blue::before   { background: linear-gradient(90deg, #2563eb, #60a5fa); }
-.fc-indigo { background: linear-gradient(145deg, rgba(79,70,229,.15), rgba(79,70,229,.05)); }
-.fc-indigo::before { background: linear-gradient(90deg, #4f46e5, #a78bfa); }
-.fc-teal   { background: linear-gradient(145deg, rgba(20,184,166,.15), rgba(20,184,166,.05)); }
-.fc-teal::before   { background: linear-gradient(90deg, #0d9488, #34d399); }
-.fc-violet { background: linear-gradient(145deg, rgba(139,92,246,.15), rgba(139,92,246,.05)); }
-.fc-violet::before { background: linear-gradient(90deg, #7c3aed, #c4b5fd); }
-.fc-amber  { background: linear-gradient(145deg, rgba(245,158,11,.15), rgba(245,158,11,.05)); }
-.fc-amber::before  { background: linear-gradient(90deg, #d97706, #fcd34d); }
-.fc-rose   { background: linear-gradient(145deg, rgba(244,63,94,.15), rgba(244,63,94,.05)); }
-.fc-rose::before   { background: linear-gradient(90deg, #e11d48, #fb7185); }
+.fc-lavender { background: #eeeafd; border-color: #d5ccf9; }
+.fc-mint     { background: #e3f5ee; border-color: #b8e8d0; }
+.fc-peach    { background: #fdeee6; border-color: #f7cdb4; }
+.fc-sky      { background: #e2f0fd; border-color: #b3d6f8; }
+.fc-rose     { background: #fde8ed; border-color: #f5bfcc; }
+.fc-yellow   { background: #fef8e3; border-color: #f5e29a; }
 
-.fc-icon { font-size: 2rem; margin-bottom: .75rem; }
-.fc-badge {
-  display: inline-block; font-size: .68rem; font-weight: 700;
-  text-transform: uppercase; letter-spacing: 1px;
-  color: rgba(255,255,255,.5); border: 1px solid rgba(255,255,255,.15);
-  border-radius: 99px; padding: .2rem .7rem; margin-bottom: .8rem;
-}
+.fc-emoji { font-size: 2rem; margin-bottom: .75rem; }
 .fc-title {
-  font-family: var(--font-head); font-size: 1.15rem; font-weight: 700;
-  color: #fff; margin-bottom: .6rem;
+  font-size: 1.08rem; font-weight: 800; color: #1e2356;
+  margin-bottom: .5rem;
 }
-.fc-desc {
-  color: rgba(255,255,255,.6); font-size: .9rem; line-height: 1.7; margin-bottom: 1.2rem;
-}
-.fc-link {
-  color: rgba(255,255,255,.75); font-size: .85rem; font-weight: 700;
-  text-decoration: none; transition: color .2s;
-}
-.fc-link:hover { color: #fff; }
+.fc-desc { color: #545b7c; font-size: .9rem; line-height: 1.7; margin: 0; }
 
 /* ══ HOW IT WORKS ══ */
 .how-section {
-  background: linear-gradient(180deg, #06080f 0%, #0d1117 60%, #06080f 100%);
-  border-top: 1px solid rgba(255,255,255,.06);
-  border-bottom: 1px solid rgba(255,255,255,.06);
-  padding: 5rem 2rem;
+  background: #fff;
+  border-top: 1.5px solid rgba(91,106,240,.1);
+  border-bottom: 1.5px solid rgba(91,106,240,.1);
+  padding: 5rem 2rem; text-align: center;
 }
-.how-inner { max-width: 900px; margin: 0 auto; text-align: center; }
-.steps-grid {
-  display: flex; align-items: flex-start; justify-content: center;
-  gap: 1rem; flex-wrap: wrap; margin-top: 2.5rem;
+.steps-row {
+  display: flex; align-items: flex-start;
+  justify-content: center; gap: 1rem;
+  flex-wrap: wrap; margin-top: 2.5rem;
+  max-width: 900px; margin-left: auto; margin-right: auto;
 }
-.step {
+.step-card {
   flex: 1; min-width: 200px; max-width: 240px;
-  text-align: center; padding: 1.5rem;
+  background: #f7f8fc; border: 1.5px solid rgba(91,106,240,.1);
+  border-radius: 18px; padding: 1.6rem 1.4rem; text-align: center;
 }
 .step-num {
-  font-size: 2.5rem; font-weight: 900;
-  background: linear-gradient(135deg, #60a5fa, #a78bfa);
+  font-size: 2rem; font-weight: 900;
+  background: linear-gradient(135deg, #5b6af0, #a78bfa);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text; margin-bottom: .5rem;
 }
-.step h4 { color: #fff; font-size: 1rem; font-weight: 700; margin-bottom: .4rem; }
-.step p { color: rgba(255,255,255,.55); font-size: .87rem; line-height: 1.65; }
+.step-card h4 { color: #1e2356; font-size: 1rem; font-weight: 700; margin-bottom: .4rem; }
+.step-card p  { color: #6b7494; font-size: .87rem; line-height: 1.65; margin: 0; }
 .step-arrow {
-  font-size: 1.5rem; color: rgba(255,255,255,.25);
-  padding-top: 2.5rem; flex-shrink: 0;
+  font-size: 1.4rem; color: #b8bdd8;
+  padding-top: 2.5rem; flex-shrink: 0; align-self: flex-start;
 }
 
 /* ══ FOOTER ══ */
 .lp-footer {
-  background: #06080f; border-top: 1px solid rgba(255,255,255,.07);
-  padding: 1.5rem 2.5rem;
-  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+  background: #f0f2fa;
+  border-top: 1px solid rgba(91,106,240,.12);
+  padding: 1.4rem 2.5rem;
+  display: flex; align-items: center;
+  justify-content: space-between; flex-wrap: wrap; gap: 1rem;
 }
-.lp-footer-brand { display: flex; align-items: center; gap: .75rem; }
-.lp-footer-link { color: rgba(255,255,255,.4); font-size: .82rem; text-decoration: none; transition: color .2s; }
-.lp-footer-link:hover { color: rgba(255,255,255,.8); }
+.lp-footer-brand {
+  display: flex; align-items: center; gap: .6rem;
+  font-size: .85rem; color: #6b7494;
+}
+.footer-sep { color: #b8bdd8; }
+.footer-links { display: flex; gap: 1.4rem; flex-wrap: wrap; }
+.footer-links a {
+  color: #6b7494; font-size: .82rem;
+  text-decoration: none; transition: color .2s;
+}
+.footer-links a:hover { color: #5b6af0; }
 
 /* ══ RESPONSIVE ══ */
 @media (max-width: 640px) {
   .lp-nav { padding: 0 1.2rem; }
   .lp-nav-links a:not(.lp-btn-primary):not(.lp-btn-ghost) { display: none; }
   .step-arrow { display: none; }
-  .hero-stats { gap: 1rem; padding: .7rem 1.2rem; }
+  .hero-stats { gap: .8rem; padding: .7rem 1.2rem; }
 }
 </style>
 
